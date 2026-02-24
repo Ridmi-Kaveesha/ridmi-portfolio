@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
 
 export default function Navbar() {
   const links = [
@@ -10,17 +11,33 @@ export default function Navbar() {
   ];
 
   const [activeId, setActiveId] = useState("home");
+  const navigate = useNavigate();
+  const location = useLocation();
 
-  // Smooth scroll + set active on click
-  const handleNavClick = (id) => (e) => {
-    e.preventDefault();
+  const scrollToId = (id) => {
     const el = document.getElementById(id);
     if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
+  };
+
+  // click handler: if not on home route -> go home then scroll
+  const handleNavClick = (id) => (e) => {
+    e.preventDefault();
+
+    if (location.pathname !== "/") {
+      navigate("/", { replace: false });
+      // wait next tick for DOM render
+      setTimeout(() => scrollToId(id), 60);
+    } else {
+      scrollToId(id);
+    }
+
     setActiveId(id);
   };
 
-  // Active section highlight on scroll (IntersectionObserver)
+  // Active highlight on scroll ONLY when on "/"
   useEffect(() => {
+    if (location.pathname !== "/") return;
+
     const sections = links
       .map((l) => document.getElementById(l.id))
       .filter(Boolean);
@@ -29,23 +46,19 @@ export default function Navbar() {
 
     const observer = new IntersectionObserver(
       (entries) => {
-        // visible එක වැඩිම section එක active කරමු
         const visible = entries
           .filter((e) => e.isIntersecting)
           .sort((a, b) => b.intersectionRatio - a.intersectionRatio)[0];
 
         if (visible?.target?.id) setActiveId(visible.target.id);
       },
-      {
-        root: null,
-        threshold: [0.2, 0.35, 0.5, 0.65],
-      }
+      { threshold: [0.2, 0.35, 0.5, 0.65] }
     );
 
     sections.forEach((sec) => observer.observe(sec));
     return () => observer.disconnect();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [location.pathname]);
 
   return (
     <header className="w-full sticky top-0 z-50">
@@ -56,10 +69,10 @@ export default function Navbar() {
             <img src="/logo.png" alt="RK Logo" className="h-20 w-auto" />
           </div>
 
-          {/* Links (shift a bit right) */}
+          {/* Links */}
           <nav className="flex-1 flex justify-end pr-24 gap-10 text-white/95 text-sm font-semibold">
             {links.map((l) => {
-              const isActive = activeId === l.id;
+              const isActive = location.pathname === "/" && activeId === l.id;
 
               return (
                 <a

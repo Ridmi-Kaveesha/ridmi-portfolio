@@ -3,11 +3,11 @@ export default function About() {
       <section id="about" className="relative bg-white py-20">
         <div className="mx-auto max-w-6xl px-6">
           {/* Title */}
-          <div className="mb-14">
-            <h2 className="about-title text-4xl font-extrabold text-[#1F2A53]">
-              About Me
-            </h2>
-          </div>
+          <div className="section-heading">
+  <h2 className="section-title">About Me</h2>
+  <div className="section-underline" />
+  <p className="section-subtitle">A short intro & education details</p>
+</div>
   
           {/* Cards */}
           <div className="grid grid-cols-1 gap-10 md:grid-cols-12 md:gap-12">

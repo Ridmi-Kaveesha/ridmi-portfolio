@@ -12,30 +12,64 @@ html {
   scroll-behavior: smooth;
 }
 
-/* Decorative bubbles */
+/* --- COMMON SECTION LAYOUT + TITLES --- */
+@layer components {
+  /* All sections same spacing */
+  .section-wrap {
+    @apply bg-white px-6 py-16 md:py-20;
+  }
+
+  .section-container {
+    @apply mx-auto max-w-6xl;
+  }
+
+  /* Title block centered */
+  .section-heading {
+    @apply text-center mb-10 md:mb-12;
+  }
+
+  /* Main title (same everywhere) */
+  .section-title {
+    @apply text-4xl md:text-5xl font-extrabold text-[#1F2A53] tracking-tight;
+    font-family: "Comic Sans MS", "Trebuchet MS", cursive; /* keep your style */
+  }
+
+  /* Purple underline accent */
+  .section-underline {
+    @apply mx-auto mt-3 h-[3px] w-16 rounded-full;
+    background: linear-gradient(90deg, #4A2E73, #6B3BB9);
+    box-shadow: 0 8px 25px rgba(107, 59, 185, 0.25);
+  }
+
+  /* Optional small subtitle */
+  .section-subtitle {
+    @apply mt-4 text-sm md:text-base text-[#6B3BB9]/90;
+  }
+}
+
+/* Decorative bubbles (keep yours) */
 .bubble {
   position: absolute;
   border-radius: 9999px;
   opacity: 0.75;
   mix-blend-mode: multiply;
   animation: floaty 6s ease-in-out infinite;
-  box-shadow: 0 12px 35px rgba(0, 0, 0, 0.10);
+  box-shadow: 0 12px 35px rgba(0, 0, 0, 0.1);
 }
 
-/* Sizes + better spacing */
 .bubble-lg {
   width: 155px;
   height: 155px;
   right: 0px;
   bottom: 35px;
-  background: radial-gradient(circle at 30% 30%, #7c3aed, #4A2E73);
+  background: radial-gradient(circle at 30% 30%, #7c3aed, #4a2e73);
   animation-delay: 0s;
 }
 
 .bubble-md {
   width: 110px;
   height: 110px;
-  right: 190px; /* spread out */
+  right: 190px;
   bottom: 0px;
   background: radial-gradient(circle at 30% 30%, #a993ea, #7c3aed);
   animation-delay: 0.6s;
@@ -50,7 +84,6 @@ html {
   animation-delay: 1.1s;
 }
 
-/* Floating animation */
 @keyframes floaty {
   0% {
     transform: translateY(0px) translateX(0px) scale(1);
@@ -63,7 +96,30 @@ html {
   }
 }
 
-/* About section title font */
-.about-title {
-  font-family: "Comic Sans MS", "Trebuchet MS", cursive;
+/* Shared section heading styles (centered, consistent) */
+.section-heading {
+  text-align: center;
+}
+
+.section-title {
+  font-family: "Comic Sans MS", "Trebuchet MS", cursive; /* ඔයාගේ theme font */
+  font-size: 44px;
+  line-height: 1.05;
+  color: #1f2a53;
+}
+
+.section-underline {
+  width: 90px;
+  height: 4px;
+  border-radius: 9999px;
+  background: #6b3bb9;
+  margin: 12px auto 0;
+  opacity: 0.9;
+}
+
+.section-subtitle {
+  margin-top: 14px;
+  color: rgba(107, 59, 185, 0.9);
+  font-weight: 600;
+  font-size: 14px;
 }

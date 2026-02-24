@@ -1,23 +1,10 @@
-// src/App.jsx
 import Navbar from "./components/Navbar";
 import Home from "./sections/Home";
 import About from "./sections/About";
 import Skills from "./sections/Skills";
-import Projects from "./sections/Projects"; // ✅ real Projects component
+import Projects from "./sections/Projects";
+import Contact from "./sections/Contact";
 
-// Temporary Contact section only
-function Contact() {
-  return (
-    <div className="min-h-screen bg-white px-6 py-24">
-      <div className="mx-auto max-w-6xl">
-        <h2 className="about-title text-4xl text-[#1F2A53]">Contact</h2>
-        <p className="mt-6 text-[#6B3BB9]">Contact section coming soon...</p>
-      </div>
-    </div>
-  );
-}
-
-// Scroll offset fix
 function SectionWrap({ id, children }) {
   return (
     <section id={id} className="scroll-mt-24">
@@ -43,7 +30,6 @@ export default function App() {
         <Skills />
       </SectionWrap>
 
-      {/* ✅ REAL Projects section */}
       <SectionWrap id="projects">
         <Projects />
       </SectionWrap>

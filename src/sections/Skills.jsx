@@ -47,12 +47,17 @@ const skills = [
       <section id="skills" className="relative bg-white px-6 py-24 overflow-hidden">
         <div className="mx-auto max-w-6xl">
           {/* Title */}
-          <div className="mb-12">
-            <h2 className="about-title text-5xl text-[#1F2A53] drop-shadow-sm">
-              Skills
-            </h2>
-            <div className="mt-3 h-1 w-20 rounded-full bg-[#6B3BB9]" />
-          </div>
+          <div className="section-wrap">
+      <div className="section-container">
+        <div className="section-heading">
+          <h2 className="section-title">Skills</h2>
+          <div className="section-underline" />
+          <p className="section-subtitle">Tools & technologies I use</p>
+        </div>
+
+        {/* your skills UI */}
+      </div>
+    </div>
   
           {/* Main Card */}
           <div className="relative rounded-3xl bg-gradient-to-br from-purple-50 via-white to-fuchsia-50 p-10 shadow-[0_18px_60px_rgba(20,20,60,0.10)] ring-1 ring-black/5">
