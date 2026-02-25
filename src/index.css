@@ -12,7 +12,9 @@ html {
   scroll-behavior: smooth;
 }
 
-/* --- COMMON SECTION LAYOUT + TITLES --- */
+/* ------------------------------
+   COMPONENT CLASSES (Tailwind)
+-------------------------------- */
 @layer components {
   /* All sections same spacing */
   .section-wrap {
@@ -23,7 +25,7 @@ html {
     @apply mx-auto max-w-6xl;
   }
 
-  /* Title block centered */
+  /* Title block centered (default) */
   .section-heading {
     @apply text-center mb-10 md:mb-12;
   }
@@ -31,23 +33,36 @@ html {
   /* Main title (same everywhere) */
   .section-title {
     @apply text-4xl md:text-5xl font-extrabold text-[#1F2A53] tracking-tight;
-    font-family: "Comic Sans MS", "Trebuchet MS", cursive; /* keep your style */
+    font-family: "Comic Sans MS", "Trebuchet MS", cursive;
   }
 
   /* Purple underline accent */
   .section-underline {
-    @apply mx-auto mt-3 h-[3px] w-16 rounded-full;
-    background: linear-gradient(90deg, #4A2E73, #6B3BB9);
+    @apply mx-auto mt-3 h-[3px] w-20 rounded-full;
+    background: linear-gradient(90deg, #4a2e73, #6b3bb9);
     box-shadow: 0 8px 25px rgba(107, 59, 185, 0.25);
   }
 
   /* Optional small subtitle */
   .section-subtitle {
-    @apply mt-4 text-sm md:text-base text-[#6B3BB9]/90;
+    @apply mt-4 text-sm md:text-base font-semibold text-[#6B3BB9]/90;
+  }
+
+  /* Optional: left aligned heading */
+  .section-heading-left {
+    @apply text-left mb-10 md:mb-12;
+  }
+
+  .section-underline-left {
+    @apply mt-3 h-[3px] w-20 rounded-full;
+    background: linear-gradient(90deg, #4a2e73, #6b3bb9);
+    box-shadow: 0 8px 25px rgba(107, 59, 185, 0.25);
   }
 }
 
-/* Decorative bubbles (keep yours) */
+/* ------------------------------
+   DECORATIVE BUBBLES
+-------------------------------- */
 .bubble {
   position: absolute;
   border-radius: 9999px;
@@ -96,30 +111,71 @@ html {
   }
 }
 
-/* Shared section heading styles (centered, consistent) */
-.section-heading {
-  text-align: center;
+/* ------------------------------
+   HERO EFFECTS (Home section)
+-------------------------------- */
+
+/* Soft background texture */
+.hero-bg {
+  background: radial-gradient(
+      circle at 20% 45%,
+      rgba(107, 59, 185, 0.14),
+      transparent 55%
+    ),
+    radial-gradient(
+      circle at 85% 70%,
+      rgba(124, 58, 237, 0.1),
+      transparent 55%
+    ),
+    linear-gradient(180deg, #ffffff 0%, #faf7ff 100%);
 }
 
-.section-title {
-  font-family: "Comic Sans MS", "Trebuchet MS", cursive; /* ඔයාගේ theme font */
-  font-size: 44px;
-  line-height: 1.05;
-  color: #1f2a53;
+/* Typing cursor */
+.typing-cursor {
+  display: inline-block;
+  margin-left: 2px;
+  opacity: 0.85;
+  animation: blink 0.9s steps(1) infinite;
 }
 
-.section-underline {
-  width: 90px;
-  height: 4px;
-  border-radius: 9999px;
-  background: #6b3bb9;
-  margin: 12px auto 0;
-  opacity: 0.9;
+@keyframes blink {
+  0%,
+  49% {
+    opacity: 1;
+  }
+  50%,
+  100% {
+    opacity: 0;
+  }
 }
 
-.section-subtitle {
-  margin-top: 14px;
-  color: rgba(107, 59, 185, 0.9);
-  font-weight: 600;
-  font-size: 14px;
+/* Hero image floating (keeps your md:translate-x-10 look) */
+.hero-float {
+  animation: heroFloat 6s ease-in-out infinite;
 }
+
+@keyframes heroFloat {
+  0%,
+  100% {
+    transform: translateX(2.5rem) translateY(0);
+  }
+  50% {
+    transform: translateX(2.5rem) translateY(-10px);
+  }
+}
+
+/* ------------------------------
+   ACCESSIBILITY: Reduce Motion
+-------------------------------- */
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  .typing-cursor,
+  .hero-float,
+  .bubble {
+    animation: none !important;
+  }
+}
+
