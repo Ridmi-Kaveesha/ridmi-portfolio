@@ -1,102 +1,117 @@
 [
-    {
-      "id": "handicraft",
-      "title": "Handicraft Website",
-      "desc": "Created a handicraft e-commerce website for traditional handcrafted products and modern artisanal designs, highlighting cultural craftsmanship with a contemporary appeal.",
-      "image": "/handicraft.jpg",
-      "tags": ["UI/UX", "E-commerce", "Frontend"],
-      "caseStudy": {
-        "role": "UI/UX Designer + Frontend Developer",
-        "tools": ["Figma", "React", "Tailwind CSS"],
-        "highlights": [
-          "Designed a clean product listing & details flow",
-          "Built reusable UI components",
-          "Improved readability and consistent spacing"
-        ]
-      },
-      "links": {
-        "live": "https://example.com",
-        "github": "https://github.com/example"
-      }
+  {
+    "id": "handicraft-ecommerce",
+    "title": "Handicraft",
+    "subtitle": "E-commerce Full-Stack Website",
+    "desc": "An e-commerce platform for traditional handcrafted products and modern artisanal designs highlighting Sri Lankan cultural craftsmanship with a contemporary appeal.",
+    "status": "Completed",
+    "image": "/projectpics/handicraft.png",
+    "tags": ["E-commerce", "Full-Stack", "PHP", "MySQL"],
+    "caseStudy": {
+      "role": "Full-Stack Developer",
+      "tools": ["JavaScript", "HTML", "CSS", "PHP", "MySQL"],
+      "highlights": [
+        "Dynamic product listing & detail system",
+        "Database-driven backend using MySQL",
+        "Admin management functionality",
+        "Clean and consistent responsive UI"
+      ]
     },
-    {
-      "id": "travel",
-      "title": "Travel Package Booking",
-      "desc": "Developing a travel package booking platform where customers can browse packages, select a preferred plan, and proceed with online payments.",
-      "image": "/travel.jpg",
-      "tags": ["Web App", "Booking", "Payments"],
-      "caseStudy": {
-        "role": "Frontend Developer",
-        "tools": ["React", "Tailwind CSS", "Node (API)"],
-        "highlights": [
-          "Responsive booking UI with clear flow",
-          "Reusable form components & validation",
-          "Payment step UX improvements"
-        ]
-      },
-      "links": {
-        "live": "https://example.com",
-        "github": "https://github.com/example"
-      }
-    },
-    {
-      "id": "portfolio",
-      "title": "Personal Portfolio",
-      "desc": "A clean portfolio website to showcase projects, skills, and case studies with smooth scrolling and modern UI.",
-      "image": "/portfolio.jpg",
-      "tags": ["UI", "React", "Branding"],
-      "caseStudy": {
-        "role": "Designer + Developer",
-        "tools": ["Figma", "React", "Tailwind CSS"],
-        "highlights": [
-          "Consistent typography & spacing system",
-          "Component-driven UI structure",
-          "Optimized layout for desktop & mobile"
-        ]
-      },
-      "links": {
-        "live": "https://example.com",
-        "github": "https://github.com/example"
-      }
-    },
-    {
-      "id": "qa-dashboard",
-      "title": "QA Test Dashboard",
-      "desc": "A simple dashboard to track test runs, bugs, and release readiness in one place.",
-      "image": "/qa.jpg",
-      "tags": ["QA", "Dashboard", "UI"],
-      "caseStudy": {
-        "role": "UI/UX + QA",
-        "tools": ["Figma", "React"],
-        "highlights": [
-          "Clear status indicators & filters",
-          "Simple reporting widgets",
-          "Improved test visibility"
-        ]
-      },
-      "links": {
-        "live": "https://example.com",
-        "github": "https://github.com/example"
-      }
-    },
-    {
-      "id": "landing",
-      "title": "Product Landing Page",
-      "desc": "High-converting landing page with modern layout, sections, and CTA buttons for a product launch.",
-      "image": "/landing.jpg",
-      "tags": ["Landing", "Frontend", "UI/UX"],
-      "caseStudy": {
-        "role": "Frontend Developer",
-        "tools": ["HTML", "CSS", "React"],
-        "highlights": [
-          "Clear CTA hierarchy",
-          "Optimized hero + feature section",
-          "Mobile-first layout"
-        ]
-      },
-      "links": {
-        "live": "https://example.com",
-        "github": "https://github.com/example"
-      }
+    "links": {
+      "live": "https://example.com",
+      "github": "https://github.com/example"
     }
-  ]
+  },
+  {
+    "id": "rajapakshe-pharmacy",
+    "title": "Rajapakshe Pharmacy",
+    "subtitle": "MERN Stack Web Application",
+    "desc": "A modern online pharmacy system with features for buying medicine, booking doctor appointments, uploading prescriptions, and admin dashboard management.",
+    "status": "Completed",
+    "image": "/projectpics/phamacy.png",
+    "tags": ["MERN", "Healthcare", "UI/UX"],
+    "caseStudy": {
+      "role": "UI/UX Designer + Frontend Developer",
+      "tools": ["Figma", "React.js", "MongoDB"],
+      "highlights": [
+        "Medicine purchasing interface",
+        "Doctor appointment booking system",
+        "Prescription upload feature",
+        "Admin dashboard UI design"
+      ]
+    },
+    "links": {
+      "live": "https://example.com",
+      "github": "https://github.com/example"
+    }
+  },
+  {
+    "id": "my-portfolio",
+    "title": "Personal Portfolio Website",
+    "subtitle": "Modern React Portfolio",
+    "desc": "A modern personal portfolio website showcasing projects, skills, and experience using a clean UI design system with smooth layout and responsive structure.",
+    "status": "Completed",
+    "image": "/projectpics/portfolio.png",
+    "tags": ["Portfolio", "React", "Tailwind", "UI Design"],
+    "caseStudy": {
+      "role": "Frontend Developer",
+      "tools": ["React.js", "Tailwind CSS", "Figma"],
+      "highlights": [
+        "Section-based modern layout",
+        "Reusable UI components",
+        "Responsive grid system",
+        "Project modal case-study view"
+      ]
+    },
+    "links": {
+      "live": "https://example.com",
+      "github": "https://github.com/example"
+    }
+  },
+  {
+    "id": "red-restaurant-app",
+    "title": "Red",
+    "subtitle": "Android Restaurant App",
+    "desc": "An Android-based food delivery application designed for a restaurant’s online ordering system. Users can browse menus, customize orders, and schedule deliveries.",
+    "status": "Completed",
+    "image": "/projectpics/resturant.png",
+    "tags": ["Android", "Java", "Food Delivery"],
+    "caseStudy": {
+      "role": "Android Developer",
+      "tools": ["Java", "Android Studio"],
+      "highlights": [
+        "Menu browsing with item customization",
+        "Optimized order and checkout flow",
+        "Delivery scheduling functionality",
+        "User-friendly Android interface"
+      ]
+    },
+    "links": {
+      "live": "https://example.com",
+      "github": "https://github.com/example"
+    }
+  },
+  {
+    "id": "sri-lanka-roads",
+    "title": "Sri Lanka Roads",
+    "subtitle": "Travel Package Booking Website",
+    "desc": "Currently developing a travel package booking platform where customers can view tour packages, select their preferred option, and proceed with online payment.",
+    "status": "Ongoing",
+    "image": "/projectpics/travel.png",
+    "tags": ["Web App", "Booking", "Payments"],
+    "caseStudy": {
+      "role": "Frontend Developer / UI Designer",
+      "tools": ["Figma", "React.js", "MongoDB"],
+      "highlights": [
+        "Tour package browsing system",
+        "User-friendly booking workflow",
+        "Payment integration preparation",
+        "Modern responsive UI design"
+      ]
+    },
+    "links": {
+      "live": "https://example.com",
+      "github": "https://github.com/example"
+    }
+  }
+]

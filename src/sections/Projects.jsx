@@ -1,35 +1,36 @@
 import { useEffect, useMemo, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 import projectsData from "../data/projects.json";
 
 function cn(...classes) {
   return classes.filter(Boolean).join(" ");
 }
 
-function ArrowButton({ dir = "right", onClick, hidden }) {
+function ArrowButton({ dir = "right", onClick, hidden, disabled }) {
   if (hidden) return null;
 
   return (
     <button
       type="button"
       onClick={onClick}
+      disabled={disabled}
       className={cn(
         "group absolute top-1/2 -translate-y-1/2 z-20",
         "h-12 w-12 rounded-full",
         "bg-white/80 backdrop-blur border border-[#E8DDF8]",
         "shadow-md hover:shadow-lg transition",
+        "focus:outline-none focus:ring-2 focus:ring-[#6B3BB9]/40",
+        "disabled:opacity-40 disabled:cursor-not-allowed",
         dir === "left" ? "-left-6" : "-right-6"
       )}
       aria-label={dir === "left" ? "Previous projects" : "Next projects"}
     >
-      <span className="sr-only">
-        {dir === "left" ? "Previous" : "Next"}
-      </span>
+      <span className="sr-only">{dir === "left" ? "Previous" : "Next"}</span>
       <svg
         viewBox="0 0 24 24"
         className={cn(
           "mx-auto h-5 w-5 text-[#4A2E73] transition",
-          "group-hover:scale-110",
-          dir === "left" ? "" : ""
+          "group-hover:scale-110"
         )}
         fill="none"
         stroke="currentColor"
@@ -42,6 +43,23 @@ function ArrowButton({ dir = "right", onClick, hidden }) {
         )}
       </svg>
     </button>
+  );
+}
+
+function StatusBadge({ status }) {
+  if (!status) return null;
+  const isOngoing = String(status).toLowerCase().includes("ongoing");
+
+  return (
+    <span
+      className={cn(
+        "rounded-full px-3 py-1 text-xs font-semibold",
+        "bg-white/85 backdrop-blur border border-white/60 shadow-sm",
+        isOngoing ? "text-[#B45309]" : "text-[#2E7D32]"
+      )}
+    >
+      {status}
+    </span>
   );
 }
 
@@ -63,26 +81,25 @@ function ProjectCard({ project, onOpenCaseStudy }) {
           className="h-full w-full object-cover transition duration-500 group-hover:scale-[1.03]"
           loading="lazy"
         />
-        {/* soft overlay */}
         <div className="absolute inset-0 bg-gradient-to-t from-black/25 via-black/0 to-black/0" />
 
-        {/* tags */}
-        {project.tags?.length ? (
-          <div className="absolute left-4 top-4 flex flex-wrap gap-2">
-            {project.tags.slice(0, 3).map((t) => (
-              <span
-                key={t}
-                className={cn(
-                  "rounded-full px-3 py-1 text-xs",
-                  "bg-white/80 backdrop-blur border border-white/60",
-                  "text-[#4A2E73] shadow-sm"
-                )}
-              >
-                {t}
-              </span>
-            ))}
-          </div>
-        ) : null}
+        <div className="absolute left-4 top-4 flex flex-wrap gap-2">
+          <StatusBadge status={project.status} />
+          {project.tags?.length
+            ? project.tags.slice(0, 2).map((t) => (
+                <span
+                  key={t}
+                  className={cn(
+                    "rounded-full px-3 py-1 text-xs",
+                    "bg-white/80 backdrop-blur border border-white/60",
+                    "text-[#4A2E73] shadow-sm"
+                  )}
+                >
+                  {t}
+                </span>
+              ))
+            : null}
+        </div>
       </div>
 
       {/* Content */}
@@ -90,6 +107,12 @@ function ProjectCard({ project, onOpenCaseStudy }) {
         <h3 className="about-title text-3xl text-[#1F2A53] leading-tight">
           {project.title}
         </h3>
+
+        {project.subtitle ? (
+          <p className="mt-1 text-sm font-semibold text-[#6B3BB9]">
+            {project.subtitle}
+          </p>
+        ) : null}
 
         <p className="mt-3 text-sm md:text-[15px] leading-6 text-[#3c3c55]/80">
           {project.desc}
@@ -103,24 +126,21 @@ function ProjectCard({ project, onOpenCaseStudy }) {
               "px-6 py-2.5 rounded-2xl",
               "bg-[#4A2E73] text-white font-medium",
               "shadow-md transition",
-              "hover:bg-[#5B3A8B] hover:shadow-lg"
+              "hover:bg-[#5B3A8B] hover:shadow-lg",
+              "focus:outline-none focus:ring-2 focus:ring-[#6B3BB9]/40"
             )}
           >
             View Case Study
           </button>
 
-          {project.links?.live ? (
-            <a
-              href={project.links.live}
-              target="_blank"
-              rel="noreferrer"
-              className="text-sm font-semibold text-[#6B3BB9] hover:underline"
-            >
-              Live →
-            </a>
-          ) : (
-            <span className="text-sm text-[#6B3BB9]/60">Live →</span>
-          )}
+          {/* If you want this ALSO to open popup (not go external) */}
+          <button
+            type="button"
+            onClick={() => onOpenCaseStudy(project)}
+            className="text-sm font-semibold text-[#6B3BB9] hover:underline"
+          >
+            Live →
+          </button>
         </div>
       </div>
     </div>
@@ -128,22 +148,40 @@ function ProjectCard({ project, onOpenCaseStudy }) {
 }
 
 function CaseStudyModal({ project, onClose }) {
+  const closeBtnRef = useRef(null);
+
+  useEffect(() => {
+    if (!project) return;
+
+    const onKey = (e) => {
+      if (e.key === "Escape") onClose?.();
+    };
+    window.addEventListener("keydown", onKey);
+
+    const prev = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+
+    setTimeout(() => closeBtnRef.current?.focus(), 0);
+
+    return () => {
+      window.removeEventListener("keydown", onKey);
+      document.body.style.overflow = prev;
+    };
+  }, [project, onClose]);
+
   if (!project) return null;
 
   const cs = project.caseStudy || {};
 
-  return (
+  // ✅ Portal: always renders above everything
+  return createPortal(
     <div
-      className="fixed inset-0 z-[999] flex items-center justify-center px-4"
+      className="fixed inset-0 z-[9999] flex items-center justify-center px-4"
       role="dialog"
       aria-modal="true"
     >
       {/* backdrop */}
-      <button
-        className="absolute inset-0 bg-black/40"
-        onClick={onClose}
-        aria-label="Close modal"
-      />
+      <div className="absolute inset-0 bg-black/50" onClick={onClose} />
 
       {/* modal */}
       <div
@@ -152,6 +190,7 @@ function CaseStudyModal({ project, onClose }) {
           "bg-white border border-[#E8DDF8]",
           "shadow-[0_40px_120px_rgba(0,0,0,0.25)]"
         )}
+        onClick={(e) => e.stopPropagation()}
       >
         <div className="p-6 md:p-8">
           <div className="flex items-start justify-between gap-4">
@@ -159,25 +198,37 @@ function CaseStudyModal({ project, onClose }) {
               <h3 className="about-title text-3xl text-[#1F2A53]">
                 {project.title}
               </h3>
-              <p className="mt-2 text-[#6B3BB9] text-sm">
-                {cs.role || "Case Study"}
-              </p>
+
+              <div className="mt-2 flex flex-wrap items-center gap-2">
+                {project.subtitle ? (
+                  <p className="text-[#6B3BB9] text-sm font-semibold">
+                    {project.subtitle}
+                  </p>
+                ) : (
+                  <p className="text-[#6B3BB9] text-sm">
+                    {cs.role || "Case Study"}
+                  </p>
+                )}
+                <StatusBadge status={project.status} />
+              </div>
             </div>
 
             <button
+              ref={closeBtnRef}
               onClick={onClose}
               className={cn(
                 "h-10 w-10 rounded-full",
                 "border border-[#E8DDF8] bg-white",
-                "hover:bg-[#F6F2FF] transition"
+                "hover:bg-[#F6F2FF] transition",
+                "focus:outline-none focus:ring-2 focus:ring-[#6B3BB9]/40"
               )}
               aria-label="Close"
+              type="button"
             >
               ✕
             </button>
           </div>
 
-          {/* body */}
           <div className="mt-6 grid gap-6 md:grid-cols-2">
             <div className="overflow-hidden rounded-2xl border border-[#E8DDF8]">
               <img
@@ -192,7 +243,7 @@ function CaseStudyModal({ project, onClose }) {
               {cs.tools?.length ? (
                 <>
                   <p className="text-sm font-semibold text-[#1F2A53]">
-                    Tools / Tech
+                    Technologies
                   </p>
                   <div className="mt-2 flex flex-wrap gap-2">
                     {cs.tools.map((t) => (
@@ -218,15 +269,10 @@ function CaseStudyModal({ project, onClose }) {
                     ))}
                   </ul>
                 </>
-              ) : (
-                <p className="mt-5 text-sm text-[#3c3c55]/80">
-                  Add case study highlights in <code>projects.json</code>
-                </p>
-              )}
+              ) : null}
             </div>
           </div>
 
-          {/* footer */}
           <div className="mt-7 flex flex-wrap items-center justify-end gap-3">
             {project.links?.github ? (
               <a
@@ -253,20 +299,21 @@ function CaseStudyModal({ project, onClose }) {
             <button
               onClick={onClose}
               className="px-5 py-2.5 rounded-2xl text-[#6B3BB9] hover:underline"
+              type="button"
             >
               Close
             </button>
           </div>
         </div>
       </div>
-    </div>
+    </div>,
+    document.body
   );
 }
 
 export default function Projects() {
-  const projects = projectsData || [];
+  const projects = Array.isArray(projectsData) ? projectsData : [];
 
-  // responsive: desktop 2 cards, mobile 1 card
   const [perPage, setPerPage] = useState(2);
   useEffect(() => {
     const mq = window.matchMedia("(max-width: 768px)");
@@ -286,7 +333,6 @@ export default function Projects() {
 
   const [page, setPage] = useState(0);
   useEffect(() => {
-    // perPage change වුනාම page index safe කරන්න
     setPage((p) => Math.min(p, Math.max(0, pages.length - 1)));
   }, [pages.length]);
 
@@ -300,58 +346,57 @@ export default function Projects() {
 
   const openAll = () => {
     setShowAll(true);
-    setTimeout(() => {
-      allRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
-    }, 50);
+    setTimeout(
+      () => allRef.current?.scrollIntoView({ behavior: "smooth", block: "start" }),
+      60
+    );
   };
 
   return (
     <div className="min-h-screen bg-white px-6 py-16 md:py-20">
       <div className="mx-auto max-w-6xl">
-        {/* header */}
         <div className="flex flex-col gap-6 md:flex-row md:items-end md:justify-between">
-  <div className="section-heading md:text-left md:mb-0">
-    <h2 className="section-title md:text-left">Projects</h2>
-    <div className="section-underline md:mx-0" />
-    <p className="section-subtitle md:text-left">
-      Selected works & case studies
-    </p>
-  </div>
+          <div className="section-heading md:text-left md:mb-0">
+            <h2 className="section-title md:text-left">Projects</h2>
+            <div className="section-underline md:mx-0" />
+            <p className="section-subtitle md:text-left">
+              Selected works & case studies
+            </p>
+          </div>
 
-  <button
-    type="button"
-    onClick={openAll}
-    className="px-6 py-2.5 rounded-2xl bg-[#4A2E73] text-white font-semibold shadow-md hover:shadow-lg hover:bg-[#5B3A8B] transition"
-  >
-    View More
-  </button>
-</div>
-        {/* carousel wrapper */}
+          <button
+            type="button"
+            onClick={openAll}
+            className="px-6 py-2.5 rounded-2xl bg-[#4A2E73] text-white font-semibold shadow-md hover:shadow-lg hover:bg-[#5B3A8B] transition"
+          >
+            View More
+          </button>
+        </div>
+
         <div className="relative mt-10 md:mt-12">
-          {/* arrows (ONLY show when available) */}
           <ArrowButton
             dir="left"
             onClick={() => setPage((p) => Math.max(0, p - 1))}
             hidden={!canPrev}
+            disabled={!canPrev}
           />
           <ArrowButton
             dir="right"
             onClick={() => setPage((p) => Math.min(pages.length - 1, p + 1))}
             hidden={!canNext}
+            disabled={!canNext}
           />
 
-          {/* cards */}
           <div className="grid gap-7 md:grid-cols-2">
             {(pages[page] || []).map((proj) => (
               <ProjectCard
                 key={proj.id}
                 project={proj}
-                onOpenCaseStudy={(p) => setActiveProject(p)}
+                onOpenCaseStudy={setActiveProject}
               />
             ))}
           </div>
 
-          {/* dots */}
           {pages.length > 1 ? (
             <div className="mt-7 flex justify-center gap-2">
               {pages.map((_, i) => (
@@ -370,14 +415,12 @@ export default function Projects() {
           ) : null}
         </div>
 
-        {/* ALL PROJECTS GRID */}
         {showAll ? (
           <div ref={allRef} className="mt-16 md:mt-20">
             <div className="flex items-center justify-between gap-4">
               <h3 className="about-title text-4xl text-[#1F2A53]">
                 All Projects
               </h3>
-
               <button
                 type="button"
                 onClick={() => {
@@ -395,7 +438,7 @@ export default function Projects() {
                 <ProjectCard
                   key={proj.id}
                   project={proj}
-                  onOpenCaseStudy={(p) => setActiveProject(p)}
+                  onOpenCaseStudy={setActiveProject}
                 />
               ))}
             </div>
@@ -403,7 +446,7 @@ export default function Projects() {
         ) : null}
       </div>
 
-      {/* modal */}
+      {/* ✅ Portal modal */}
       <CaseStudyModal
         project={activeProject}
         onClose={() => setActiveProject(null)}

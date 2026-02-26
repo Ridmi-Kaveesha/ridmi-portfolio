@@ -2,49 +2,68 @@ import { useEffect, useState } from "react";
 import { FaGithub, FaLinkedin, FaEnvelope, FaDownload } from "react-icons/fa";
 
 export default function Home() {
+  // Title typing
   const fullTitle = "Hi, I’m Ridmi Kaveesha..";
   const [titleTyped, setTitleTyped] = useState("");
   const [titleDone, setTitleDone] = useState(false);
 
+  // Roles auto typing
   const roles = ["Frontend Developer", "UI/UX Designer", "QA Enthusiast"];
   const [roleIndex, setRoleIndex] = useState(0);
   const [roleTyped, setRoleTyped] = useState("");
   const [isDeleting, setIsDeleting] = useState(false);
 
-  // Title typing
+  // Show controls
+  const [showRoleLine, setShowRoleLine] = useState(false);
+  const [showBtn, setShowBtn] = useState(false);
+  const [showIcons, setShowIcons] = useState(false);
+
+  // 1) Title typing
   useEffect(() => {
     let i = 0;
-    const interval = setInterval(() => {
-      i++;
+    const t = setInterval(() => {
+      i += 1;
       setTitleTyped(fullTitle.slice(0, i));
       if (i >= fullTitle.length) {
-        clearInterval(interval);
+        clearInterval(t);
         setTitleDone(true);
+
+        // show role line after title
+        setTimeout(() => setShowRoleLine(true), 220);
       }
     }, 55);
 
-    return () => clearInterval(interval);
+    return () => clearInterval(t);
   }, []);
 
-  // Roles auto typing
+  // 2) Roles type + delete loop (starts after title finishes)
   useEffect(() => {
     if (!titleDone) return;
 
     const current = roles[roleIndex];
     const typingSpeed = isDeleting ? 35 : 65;
+    const pauseAfterTyped = 900;
 
     const timer = setTimeout(() => {
       if (!isDeleting) {
         const next = current.slice(0, roleTyped.length + 1);
         setRoleTyped(next);
 
+        // when first role fully typed => show button then icons (only once)
+        if (next === current && roleIndex === 0 && !showBtn) {
+          setTimeout(() => setShowBtn(true), 350);
+          setTimeout(() => setShowIcons(true), 650);
+        }
+
+        // when fully typed -> start deleting
         if (next === current) {
-          setTimeout(() => setIsDeleting(true), 900);
+          setTimeout(() => setIsDeleting(true), pauseAfterTyped);
         }
       } else {
         const next = current.slice(0, roleTyped.length - 1);
         setRoleTyped(next);
 
+        // when deleted -> next role
         if (next === "") {
           setIsDeleting(false);
           setRoleIndex((prev) => (prev + 1) % roles.length);
@@ -53,7 +72,7 @@ export default function Home() {
     }, typingSpeed);
 
     return () => clearTimeout(timer);
-  }, [titleDone, roleTyped, isDeleting, roleIndex]);
+  }, [titleDone, roleIndex, roleTyped, isDeleting, showBtn]);
 
   return (
     <section
@@ -62,7 +81,6 @@ export default function Home() {
     >
       <div className="mx-auto max-w-6xl w-full px-6">
         <div className="grid grid-cols-12 items-center gap-y-10">
-          
           {/* LEFT IMAGE */}
           <div className="col-span-12 md:col-span-5 flex justify-center md:justify-start">
             <div className="relative -mt-6">
@@ -77,21 +95,24 @@ export default function Home() {
 
           {/* RIGHT CONTENT */}
           <div className="col-span-12 md:col-span-7 text-center md:text-left md:pl-16 md:translate-x-10">
-            
             {/* Title */}
             <h1 className="text-4xl md:text-5xl font-extrabold text-[#1F2A53]">
               {titleTyped}
               <span className="typing-cursor">|</span>
             </h1>
 
-            {/* Auto Typing Roles */}
-            <p className="mt-4 text-lg md:text-xl text-[#6B3BB9] font-semibold">
-              {roleTyped}
-              {titleDone && <span className="typing-cursor">|</span>}
+            {/* Role line (auto loop) */}
+            <p className="mt-4 text-lg md:text-xl text-[#6B3BB9] font-semibold min-h-[28px]">
+              {showRoleLine ? (
+                <span className="fade-up">
+                  {roleTyped}
+                  <span className="typing-cursor">|</span>
+                </span>
+              ) : null}
             </p>
 
-            {/* Resume Button */}
-            <div className="mt-6">
+            {/* Resume Button (appears after first role typed) */}
+            <div className={`mt-6 ${showBtn ? "fade-up" : "opacity-0"}`}>
               <a
                 href="/CV.pdf"
                 target="_blank"
@@ -103,9 +124,12 @@ export default function Home() {
               </a>
             </div>
 
-            {/* Social Icons */}
-            <div className="mt-7 flex items-center gap-6 justify-center md:justify-start">
-              
+            {/* Icons (appears after button) */}
+            <div
+              className={`mt-7 flex items-center gap-6 justify-center md:justify-start ${
+                showIcons ? "fade-up" : "opacity-0"
+              }`}
+            >
               <a
                 href="https://github.com/Ridmi-Kaveesha"
                 target="_blank"
@@ -133,7 +157,6 @@ export default function Home() {
               >
                 <FaEnvelope />
               </a>
-
             </div>
           </div>
         </div>
