@@ -7,11 +7,11 @@ export default function Home() {
   const [titleTyped, setTitleTyped] = useState("");
   const [titleDone, setTitleDone] = useState(false);
 
-  // Roles auto typing
+  // Roles (type one-by-one, then show all together)
   const roles = ["Frontend Developer", "UI/UX Designer", "QA Enthusiast"];
-  const [roleIndex, setRoleIndex] = useState(0);
-  const [roleTyped, setRoleTyped] = useState("");
-  const [isDeleting, setIsDeleting] = useState(false);
+  const [roleStep, setRoleStep] = useState(0); // 0..2 typing, 3 = all shown
+  const [roleTyped, setRoleTyped] = useState(""); // current role typing text
+  const [doneRoles, setDoneRoles] = useState([]); // finished roles array
 
   // Show controls
   const [showRoleLine, setShowRoleLine] = useState(false);
@@ -28,51 +28,56 @@ export default function Home() {
         clearInterval(t);
         setTitleDone(true);
 
-        // show role line after title
-        setTimeout(() => setShowRoleLine(true), 220);
+        // start roles after title
+        setTimeout(() => setShowRoleLine(true), 250);
       }
     }, 55);
 
     return () => clearInterval(t);
   }, []);
 
-  // 2) Roles type + delete loop (starts after title finishes)
+  // 2) Roles typing sequence (no delete)
   useEffect(() => {
     if (!titleDone) return;
+    if (!showRoleLine) return;
+    if (roleStep >= roles.length) return; // finished all
 
-    const current = roles[roleIndex];
-    const typingSpeed = isDeleting ? 35 : 65;
-    const pauseAfterTyped = 900;
+    const current = roles[roleStep];
 
     const timer = setTimeout(() => {
-      if (!isDeleting) {
-        const next = current.slice(0, roleTyped.length + 1);
-        setRoleTyped(next);
+      const next = current.slice(0, roleTyped.length + 1);
+      setRoleTyped(next);
 
-        // when first role fully typed => show button then icons (only once)
-        if (next === current && roleIndex === 0 && !showBtn) {
-          setTimeout(() => setShowBtn(true), 350);
-          setTimeout(() => setShowIcons(true), 650);
-        }
+      // finished current role
+      if (next === current) {
+        // store it
+        setDoneRoles((prev) => [...prev, current]);
+        setRoleTyped("");
 
-        // when fully typed -> start deleting
-        if (next === current) {
-          setTimeout(() => setIsDeleting(true), pauseAfterTyped);
-        }
-      } else {
-        const next = current.slice(0, roleTyped.length - 1);
-        setRoleTyped(next);
-
-        // when deleted -> next role
-        if (next === "") {
-          setIsDeleting(false);
-          setRoleIndex((prev) => (prev + 1) % roles.length);
-        }
+        // move to next role after small pause
+        setTimeout(() => {
+          setRoleStep((s) => s + 1);
+        }, 350);
       }
-    }, typingSpeed);
+    }, 55);
 
     return () => clearTimeout(timer);
-  }, [titleDone, roleIndex, roleTyped, isDeleting, showBtn]);
+  }, [titleDone, showRoleLine, roleStep, roleTyped]);
+
+  // 3) After all roles completed -> show button then icons
+  useEffect(() => {
+    if (doneRoles.length !== roles.length) return;
+
+    const t1 = setTimeout(() => setShowBtn(true), 250);
+    const t2 = setTimeout(() => setShowIcons(true), 550);
+
+    return () => {
+      clearTimeout(t1);
+      clearTimeout(t2);
+    };
+  }, [doneRoles.length]);
+
+  const allRolesDone = doneRoles.length === roles.length;
 
   return (
     <section
@@ -97,21 +102,44 @@ export default function Home() {
           <div className="col-span-12 md:col-span-7 text-center md:text-left md:pl-16 md:translate-x-10">
             {/* Title */}
             <h1 className="text-4xl md:text-5xl font-extrabold text-[#1F2A53]">
-              {titleTyped}
-              <span className="typing-cursor">|</span>
+            {titleTyped}
+            {titleTyped.length < fullTitle.length && (
+  <span className="typing-cursor">|</span>
+            )}
             </h1>
 
-            {/* Role line (auto loop) */}
-            <p className="mt-4 text-lg md:text-xl text-[#6B3BB9] font-semibold min-h-[28px]">
-              {showRoleLine ? (
-                <span className="fade-up">
-                  {roleTyped}
-                  <span className="typing-cursor">|</span>
-                </span>
-              ) : null}
+            {/* Roles line */}
+            <p className="mt-4 text-lg md:text-xl text-[#6B3BB9] font-semibold min-h-[30px]">
+              {!showRoleLine ? null : (
+                <>
+                  {/* Show typed sequence until all roles done */}
+                  {!allRolesDone ? (
+                    <span className="fade-up">
+                      {/* show completed roles first */}
+                      {doneRoles.length > 0 && (
+                        <span>
+                          {doneRoles.join(" | ")}
+                          <span className="mx-2 opacity-70">|</span>
+                        </span>
+                      )}
+
+                      {/* typing current role */}
+                      <span>
+                        {roleTyped}
+                        <span className="typing-cursor">|</span>
+                      </span>
+                    </span>
+                  ) : (
+                    /* After all typed: show all together */
+                    <span className="fade-up">
+                      {roles.join(" | ")}
+                    </span>
+                  )}
+                </>
+              )}
             </p>
 
-            {/* Resume Button (appears after first role typed) */}
+            {/* Resume Button */}
             <div className={`mt-6 ${showBtn ? "fade-up" : "opacity-0"}`}>
               <a
                 href="/CV.pdf"
@@ -124,7 +152,7 @@ export default function Home() {
               </a>
             </div>
 
-            {/* Icons (appears after button) */}
+            {/* Social Icons */}
             <div
               className={`mt-7 flex items-center gap-6 justify-center md:justify-start ${
                 showIcons ? "fade-up" : "opacity-0"

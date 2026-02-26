@@ -1,15 +1,18 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
+import {
+  FaEnvelope,
+  FaPhoneAlt,
+  FaMapMarkerAlt,
+  FaLinkedinIn,
+  FaRegCopy,
+  FaCheck,
+} from "react-icons/fa";
 
 function cn(...classes) {
   return classes.filter(Boolean).join(" ");
 }
 
-/**
- * Simple "mailto" submit (no backend needed).
- * Later you can replace with Formspree / EmailJS easily.
- */
-function buildMailTo({ email, name, subject, message }) {
-  const to = "ridmikaveesha999@gmail.com"; // <-- change if needed
+function buildMailTo({ to, name, email, subject, message }) {
   const finalSubject = subject?.trim() || "Portfolio Contact";
   const body = [
     `Name: ${name || "-"}`,
@@ -23,195 +26,193 @@ function buildMailTo({ email, name, subject, message }) {
   )}&body=${encodeURIComponent(body)}`;
 }
 
-function IconMail(props) {
+/* ---------- Tooltip Icon ---------- */
+function IconWithTooltip({ Icon, tip }) {
   return (
-    <svg viewBox="0 0 24 24" fill="none" {...props}>
-      <path
-        d="M4 6h16v12H4V6Z"
-        stroke="currentColor"
-        strokeWidth="1.8"
-        opacity="0.9"
-      />
-      <path
-        d="m4 7 8 6 8-6"
-        stroke="currentColor"
-        strokeWidth="1.8"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-    </svg>
-  );
-}
-
-function IconPhone(props) {
-  return (
-    <svg viewBox="0 0 24 24" fill="none" {...props}>
-      <path
-        d="M8.2 3.6h2.2l1 4.4-1.6 1.5c1.3 2.6 3.4 4.7 6 6l1.5-1.6 4.4 1v2.2c0 .8-.5 1.5-1.3 1.7-1.2.3-2.6.5-4 .5-7.2 0-13-5.8-13-13 0-1.4.2-2.8.5-4 .2-.8.9-1.3 1.7-1.3Z"
-        stroke="currentColor"
-        strokeWidth="1.8"
-        strokeLinejoin="round"
-      />
-    </svg>
-  );
-}
-
-function IconPin(props) {
-  return (
-    <svg viewBox="0 0 24 24" fill="none" {...props}>
-      <path
-        d="M12 21s7-5.1 7-12a7 7 0 1 0-14 0c0 6.9 7 12 7 12Z"
-        stroke="currentColor"
-        strokeWidth="1.8"
-      />
-      <path
-        d="M12 12.2a3.2 3.2 0 1 0 0-6.4 3.2 3.2 0 0 0 0 6.4Z"
-        stroke="currentColor"
-        strokeWidth="1.8"
-      />
-    </svg>
-  );
-}
-
-function IconLinkedIn(props) {
-  return (
-    <svg viewBox="0 0 24 24" fill="none" {...props}>
-      <path
-        d="M6.5 9.5V18"
-        stroke="currentColor"
-        strokeWidth="1.8"
-        strokeLinecap="round"
-      />
-      <path
-        d="M6.5 6.5v.2"
-        stroke="currentColor"
-        strokeWidth="3"
-        strokeLinecap="round"
-      />
-      <path
-        d="M10.5 18v-4.6c0-1.7 1-2.7 2.4-2.7 1.3 0 2.1.9 2.1 2.7V18"
-        stroke="currentColor"
-        strokeWidth="1.8"
-        strokeLinejoin="round"
-      />
-      <path
-        d="M10.5 12.3V18"
-        stroke="currentColor"
-        strokeWidth="1.8"
-        strokeLinecap="round"
-      />
-      <path
-        d="M4.2 3.8h15.6c.8 0 1.4.6 1.4 1.4v13.6c0 .8-.6 1.4-1.4 1.4H4.2c-.8 0-1.4-.6-1.4-1.4V5.2c0-.8.6-1.4 1.4-1.4Z"
-        stroke="currentColor"
-        strokeWidth="1.2"
-        opacity="0.35"
-      />
-    </svg>
-  );
-}
-
-function IconInstagram(props) {
-  return (
-    <svg viewBox="0 0 24 24" fill="none" {...props}>
-      <path
-        d="M7 3.8h10c1.8 0 3.2 1.4 3.2 3.2v10c0 1.8-1.4 3.2-3.2 3.2H7c-1.8 0-3.2-1.4-3.2-3.2V7c0-1.8 1.4-3.2 3.2-3.2Z"
-        stroke="currentColor"
-        strokeWidth="1.8"
-        opacity="0.9"
-      />
-      <path
-        d="M12 16.1a4.1 4.1 0 1 0 0-8.2 4.1 4.1 0 0 0 0 8.2Z"
-        stroke="currentColor"
-        strokeWidth="1.8"
-      />
-      <path
-        d="M17.6 6.4h.1"
-        stroke="currentColor"
-        strokeWidth="3"
-        strokeLinecap="round"
-      />
-    </svg>
-  );
-}
-
-function InfoPill({ icon: Icon, label, value, href }) {
-  return (
-    <a
-      href={href || "#"}
-      target={href?.startsWith("http") ? "_blank" : undefined}
-      rel={href?.startsWith("http") ? "noreferrer" : undefined}
-      className={cn(
-        "group w-full max-w-md",
-        "rounded-2xl bg-[#F3ECFF]/70",
-        "border border-[#E8DDF8] shadow-sm",
-        "px-4 py-3 flex items-center gap-3",
-        "transition hover:shadow-md hover:-translate-y-0.5"
-      )}
-      onClick={(e) => {
-        if (!href || href === "#") e.preventDefault();
-      }}
-    >
-      <span className="grid h-10 w-10 place-items-center rounded-xl bg-white/70 border border-white shadow-sm">
-        <Icon className="h-5 w-5 text-[#4A2E73]" />
+    <span className="relative inline-flex group">
+      <span
+        className={cn(
+          "grid h-11 w-11 place-items-center rounded-2xl",
+          "bg-[#F3ECFF]/80 border border-[#E8DDF8]",
+          "shadow-[0_10px_30px_rgba(18,16,46,0.08)]",
+          "transition group-hover:-translate-y-0.5"
+        )}
+      >
+        <Icon className="h-5 w-5 text-[#6B3BB9]" />
       </span>
+
+      <span
+        className={cn(
+          "pointer-events-none absolute left-1/2 -translate-x-1/2 -top-2 -translate-y-full",
+          "whitespace-nowrap rounded-xl px-3 py-1.5 text-xs font-semibold",
+          "bg-[#1F2A53] text-white shadow-xl",
+          "opacity-0 translate-y-1 transition",
+          "group-hover:opacity-100 group-hover:translate-y-0"
+        )}
+      >
+        {tip}
+        <span
+          className="absolute left-1/2 top-full -translate-x-1/2 border-[7px] border-transparent border-t-[#1F2A53]"
+          aria-hidden="true"
+        />
+      </span>
+    </span>
+  );
+}
+
+function InfoRow({
+  icon: Icon,
+  tip,
+  label,
+  value,
+  href,
+  copyValue,
+  onCopied,
+  copied,
+}) {
+  return (
+    <div
+      className={cn(
+        "flex items-center gap-4 rounded-2xl border border-[#E8DDF8]",
+        "bg-white/70 px-4 py-3",
+        "shadow-[0_12px_34px_rgba(18,16,46,0.06)]",
+        "transition hover:shadow-[0_18px_45px_rgba(18,16,46,0.10)] hover:-translate-y-0.5",
+        "hover:bg-[#F8F5FF]"
+      )}
+    >
+      <IconWithTooltip Icon={Icon} tip={tip} />
 
       <div className="min-w-0">
         <p className="text-xs font-semibold text-[#6B3BB9]/80">{label}</p>
-        <p className="truncate text-sm font-semibold text-[#1F2A53]">
-          {value}
-        </p>
+
+        {href ? (
+          <a
+            href={href}
+            target={href.startsWith("http") ? "_blank" : undefined}
+            rel={href.startsWith("http") ? "noreferrer" : undefined}
+            className="truncate text-sm font-semibold text-[#1F2A53] hover:underline"
+          >
+            {value}
+          </a>
+        ) : (
+          <p className="truncate text-sm font-semibold text-[#1F2A53]">
+            {value}
+          </p>
+        )}
       </div>
 
-      <span className="ml-auto text-[#6B3BB9]/60 group-hover:text-[#6B3BB9]">
-        ↗
-      </span>
-    </a>
+      {/* copy (optional) */}
+      {copyValue ? (
+        <button
+          type="button"
+          onClick={onCopied}
+          className={cn(
+            "ml-auto inline-flex items-center gap-2 rounded-xl px-3 py-2",
+            "border border-[#E8DDF8] bg-white/70",
+            "text-xs font-semibold text-[#6B3BB9]",
+            "transition hover:bg-[#F3ECFF]"
+          )}
+          aria-label={`Copy ${label}`}
+          title={`Copy ${label}`}
+        >
+          {copied ? <FaCheck className="h-3.5 w-3.5" /> : <FaRegCopy className="h-3.5 w-3.5" />}
+          {copied ? "Copied" : "Copy"}
+        </button>
+      ) : (
+        <span className="ml-auto text-[#6B3BB9]/50">↗</span>
+      )}
+    </div>
   );
 }
 
-function Input({ label, ...props }) {
+function Input({ label, error, ...props }) {
   return (
     <label className="block">
-      <span className="block text-sm font-semibold text-white/90">
-        {label}
-      </span>
-      <input
-        {...props}
-        className={cn(
-          "mt-2 w-full rounded-xl px-4 py-3",
-          "bg-white/10 text-white placeholder:text-white/50",
-          "border border-white/15",
-          "outline-none",
-          "focus:border-white/30 focus:ring-2 focus:ring-white/20",
-          "transition"
-        )}
-      />
+      <span className="block text-sm font-semibold text-white/90">{label}</span>
+
+      <div className="relative mt-2">
+        <input
+          {...props}
+          className={cn(
+            "w-full rounded-2xl px-4 py-3",
+            "bg-white/10 text-white placeholder:text-white/55",
+            "border outline-none transition",
+            error
+              ? "border-red-300/60 ring-2 ring-red-200/20"
+              : "border-white/20 focus:border-white/35 focus:ring-2 focus:ring-white/20",
+            "shadow-[inset_0_1px_0_rgba(255,255,255,0.12)]"
+          )}
+        />
+        <span className="pointer-events-none absolute inset-0 rounded-2xl ring-1 ring-white/5" />
+      </div>
+
+      {error && (
+        <p className="mt-2 text-xs font-medium text-red-100/90">{error}</p>
+      )}
     </label>
   );
 }
 
-function Textarea({ label, ...props }) {
+function Textarea({ label, error, ...props }) {
   return (
     <label className="block">
-      <span className="block text-sm font-semibold text-white/90">
-        {label}
-      </span>
-      <textarea
-        {...props}
-        className={cn(
-          "mt-2 w-full rounded-xl px-4 py-3",
-          "bg-white/10 text-white placeholder:text-white/50",
-          "border border-white/15",
-          "outline-none resize-none",
-          "focus:border-white/30 focus:ring-2 focus:ring-white/20",
-          "transition"
-        )}
-      />
+      <span className="block text-sm font-semibold text-white/90">{label}</span>
+
+      <div className="relative mt-2">
+        <textarea
+          {...props}
+          className={cn(
+            "w-full rounded-2xl px-4 py-3 resize-none",
+            "bg-white/10 text-white placeholder:text-white/55",
+            "border outline-none transition",
+            error
+              ? "border-red-300/60 ring-2 ring-red-200/20"
+              : "border-white/20 focus:border-white/35 focus:ring-2 focus:ring-white/20",
+            "shadow-[inset_0_1px_0_rgba(255,255,255,0.12)]"
+          )}
+        />
+        <span className="pointer-events-none absolute inset-0 rounded-2xl ring-1 ring-white/5" />
+      </div>
+
+      {error && (
+        <p className="mt-2 text-xs font-medium text-red-100/90">{error}</p>
+      )}
     </label>
   );
+}
+
+/* ---- small reveal helper (no library) ---- */
+function useRevealOnce() {
+  const ref = useRef(null);
+  const [inView, setInView] = useState(false);
+
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+
+    const io = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setInView(true);
+          io.disconnect();
+        }
+      },
+      { threshold: 0.18 }
+    );
+
+    io.observe(el);
+    return () => io.disconnect();
+  }, []);
+
+  return [ref, inView];
 }
 
 export default function Contact() {
+  const TO_EMAIL = "ridmikaveesha999@gmail.com";
+  const PHONE = "0705084100";
+  const LOCATION = "Sri Lanka";
+  const LINKEDIN_URL = "https://www.linkedin.com/";
+
   const [form, setForm] = useState({
     email: "",
     name: "",
@@ -219,21 +220,59 @@ export default function Contact() {
     message: "",
   });
 
-  const mailto = useMemo(() => buildMailTo(form), [form]);
+  const [touched, setTouched] = useState({});
+  const [hint, setHint] = useState(""); // "Opening mail app..." type
+  const [copiedKey, setCopiedKey] = useState(""); // "email" | "phone"
+
+  const errors = useMemo(() => {
+    const e = {};
+    if (!form.email.trim()) e.email = "Email is required";
+    else if (!/^\S+@\S+\.\S+$/.test(form.email)) e.email = "Invalid email";
+
+    if (!form.message.trim()) e.message = "Message is required";
+    else if (form.message.trim().length < 10)
+      e.message = "Minimum 10 characters required";
+
+    return e;
+  }, [form]);
+
+  const mailto = useMemo(() => buildMailTo({ to: TO_EMAIL, ...form }), [form]);
 
   const onChange = (key) => (e) =>
-    setForm((p) => ({ ...p, [key]: e.target.value }));
+    setForm((prev) => ({ ...prev, [key]: e.target.value }));
+
+  const canSubmit = Object.keys(errors).length === 0;
 
   const onSubmit = (e) => {
     e.preventDefault();
-    // mailto open
-    window.location.href = mailto;
+    setTouched({ email: true, message: true });
+    if (!canSubmit) return;
+
+    setHint("Opening your email app…");
+    // small delay so user sees hint (still instant)
+    setTimeout(() => {
+      window.location.href = mailto;
+      setTimeout(() => setHint(""), 1200);
+    }, 120);
   };
 
+  const copy = async (key, value) => {
+    try {
+      await navigator.clipboard.writeText(value);
+      setCopiedKey(key);
+      setTimeout(() => setCopiedKey(""), 1200);
+    } catch {
+      // ignore (clipboard might be blocked)
+    }
+  };
+
+  const [wrapRef, inView] = useRevealOnce();
+
   return (
-    <section id="contact" className="bg-white px-6 py-24">
-      <div className="mx-auto max-w-6xl">
-        {/* Title (center) */}
+    // NOTE: no id="contact" here (App.jsx already wraps it)
+    <div className="section-wrap">
+      <div ref={wrapRef} className="section-container">
+        {/* Section Title */}
         <div className="section-heading">
           <h2 className="section-title">Contact</h2>
           <div className="section-underline" />
@@ -242,132 +281,171 @@ export default function Contact() {
           </p>
         </div>
 
-        {/* Content */}
-        <div className="mt-12 grid gap-10 lg:grid-cols-12 lg:items-start">
-          {/* LEFT info */}
-          <div className="lg:col-span-5">
-            <div className="rounded-3xl border border-[#E8DDF8] bg-white shadow-[0_18px_60px_rgba(18,16,46,0.08)] p-7">
-              <p className="about-title text-2xl text-[#1F2A53]">
-                Contact Me?
+        <div className="mt-12 grid gap-10 lg:grid-cols-12">
+          {/* LEFT INFO CARD */}
+          <div
+            className={cn(
+              "lg:col-span-5",
+              inView ? "fade-up" : "opacity-0 translate-y-3"
+            )}
+          >
+            <div
+              className={cn(
+                "rounded-[28px] border border-[#E8DDF8] bg-white",
+                "p-7",
+                "shadow-[0_22px_70px_rgba(18,16,46,0.10)]",
+                "transition hover:shadow-[0_28px_85px_rgba(18,16,46,0.14)] hover:-translate-y-0.5"
+              )}
+            >
+              <h3 className="text-2xl font-extrabold tracking-tight text-[#1F2A53]">
+                Contact Me
+              </h3>
+
+              <p className="mt-4 text-sm leading-7 text-[#3c3c55]/85">
+                I’m currently open to internships, freelance work, and
+                collaboration. If you have something in mind, feel free to
+                reach out.
               </p>
 
-              <p className="mt-4 text-sm leading-7 text-[#3c3c55]/85 max-w-md">
-                I’m currently looking to join a cross-functional team that
-                values improving people’s lives through accessible design.
-                If you have a project in mind, feel free to reach out.
-              </p>
-
-              <div className="mt-7 grid gap-3">
-                <InfoPill
-                  icon={IconMail}
+              <div className="mt-6 grid gap-4">
+                <InfoRow
+                  icon={FaEnvelope}
+                  tip="Email"
                   label="Email"
-                  value="ridmikaveesha999@gmail.com"
-                  href="mailto:ridmikaveesha999@gmail.com"
+                  value={TO_EMAIL}
+                  href={`mailto:${TO_EMAIL}`}
+                  copyValue={TO_EMAIL}
+                  onCopied={() => copy("email", TO_EMAIL)}
+                  copied={copiedKey === "email"}
                 />
-                <InfoPill
-                  icon={IconPhone}
+
+                <InfoRow
+                  icon={FaPhoneAlt}
+                  tip="Call"
                   label="Phone"
-                  value="0705084100"
-                  href="tel:0705084100"
+                  value={PHONE}
+                  href={`tel:${PHONE}`}
+                  copyValue={PHONE}
+                  onCopied={() => copy("phone", PHONE)}
+                  copied={copiedKey === "phone"}
                 />
-                <InfoPill
-                  icon={IconPin}
+
+                <InfoRow
+                  icon={FaMapMarkerAlt}
+                  tip="Location"
                   label="Location"
-                  value="Sri Lanka"
-                  href="#"
+                  value={LOCATION}
                 />
-                <InfoPill
-                  icon={IconLinkedIn}
+
+                <InfoRow
+                  icon={FaLinkedinIn}
+                  tip="LinkedIn"
                   label="LinkedIn"
                   value="ridmi-kaveesha"
-                  href="https://www.linkedin.com/"
+                  href={LINKEDIN_URL}
                 />
               </div>
             </div>
           </div>
 
-          {/* RIGHT form */}
-          <div className="lg:col-span-7">
+          {/* RIGHT FORM */}
+          <div
+            className={cn(
+              "lg:col-span-7",
+              inView ? "fade-up" : "opacity-0 translate-y-3",
+              "lg:[animation-delay:120ms]"
+            )}
+          >
             <div
               className={cn(
-                "relative overflow-hidden rounded-3xl",
-                "bg-gradient-to-br from-[#4A2E73] via-[#4A2E73] to-[#6B3BB9]",
-                "shadow-[0_22px_70px_rgba(18,16,46,0.18)]"
+                "relative overflow-hidden rounded-[28px]",
+                "bg-gradient-to-br from-[#4A2E73] via-[#55308A] to-[#6B3BB9]",
+                "shadow-[0_28px_90px_rgba(18,16,46,0.22)]"
               )}
             >
-              {/* subtle glow */}
-              <div className="pointer-events-none absolute -top-24 -right-24 h-72 w-72 rounded-full bg-white/10 blur-3xl" />
-              <div className="pointer-events-none absolute -bottom-24 -left-24 h-72 w-72 rounded-full bg-fuchsia-300/20 blur-3xl" />
+              {/* modern glows */}
+              <div className="pointer-events-none absolute -top-28 -right-28 h-80 w-80 rounded-full bg-white/10 blur-3xl" />
+              <div className="pointer-events-none absolute -bottom-28 -left-28 h-80 w-80 rounded-full bg-fuchsia-300/15 blur-3xl" />
+              <div className="pointer-events-none absolute inset-0 bg-white/5 backdrop-blur-[2px]" />
 
               <form onSubmit={onSubmit} className="relative p-7 md:p-9">
+                <div className="mb-6">
+                  <h3 className="text-xl font-extrabold text-white">
+                    Send a message
+                  </h3>
+                  <p className="mt-1 text-sm text-white/70">
+                    I’ll reply as soon as possible.
+                  </p>
+                </div>
+
                 <div className="grid gap-5">
                   <Input
-                    label="E-mail"
+                    label="E-mail *"
                     type="email"
                     placeholder="you@example.com"
                     value={form.email}
                     onChange={onChange("email")}
-                    required
+                    onBlur={() => setTouched((t) => ({ ...t, email: true }))}
+                    error={touched.email && errors.email}
                   />
 
-                  <Input
-                    label="Name"
-                    type="text"
-                    placeholder="Your name"
-                    value={form.name}
-                    onChange={onChange("name")}
-                  />
+                  <div className="grid gap-5 md:grid-cols-2">
+                    <Input
+                      label="Name"
+                      type="text"
+                      placeholder="Your name"
+                      value={form.name}
+                      onChange={onChange("name")}
+                    />
 
-                  <Input
-                    label="Subject"
-                    type="text"
-                    placeholder="What’s this about?"
-                    value={form.subject}
-                    onChange={onChange("subject")}
-                  />
+                    <Input
+                      label="Subject"
+                      type="text"
+                      placeholder="Internship / Project"
+                      value={form.subject}
+                      onChange={onChange("subject")}
+                    />
+                  </div>
 
                   <Textarea
-                    label="Message"
-                    rows={5}
+                    label="Message *"
+                    rows={6}
                     placeholder="Write your message..."
                     value={form.message}
                     onChange={onChange("message")}
-                    required
+                    onBlur={() => setTouched((t) => ({ ...t, message: true }))}
+                    error={touched.message && errors.message}
                   />
 
-                  <div className="pt-2 flex items-center justify-center">
+                  <div className="flex items-center justify-between pt-2">
+                    <p className="text-xs font-semibold text-white/70">
+                      {hint ? hint : "Tip: Keep it short & clear ✨"}
+                    </p>
+
                     <button
                       type="submit"
+                      disabled={!canSubmit}
                       className={cn(
-                        "px-10 py-3 rounded-2xl font-semibold text-white",
+                        "px-9 py-3 rounded-2xl font-semibold text-white",
                         "bg-white/20 border border-white/25",
-                        "shadow-md backdrop-blur",
-                        "transition hover:bg-white/25 hover:shadow-lg",
-                        "active:scale-[0.98]"
+                        "shadow-[0_12px_30px_rgba(0,0,0,0.18)]",
+                        "transition hover:bg-white/25 hover:-translate-y-0.5 active:translate-y-0 active:scale-[0.99]",
+                        "disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:translate-y-0"
                       )}
                     >
                       Send
                     </button>
                   </div>
-
-                  <p className="text-center text-xs text-white/60">
-                    This opens your mail app (mailto). You can connect a real
-                    form service later.
-                  </p>
                 </div>
               </form>
             </div>
           </div>
         </div>
 
-        {/* Footer */}
-        <footer className="mt-20 border-t border-[#E8DDF8] pt-10">
+        {/* FOOTER (NO ICONS) */}
+        <footer className="mt-24 border-t border-[#E8DDF8] pt-10">
           <div className="text-center">
-            <p className="about-title text-2xl text-[#1F2A53]">
-              Ridmi Kaveesha
-            </p>
-
-            <div className="mt-4 flex justify-center gap-8 text-sm font-semibold text-[#6B3BB9]">
+            <div className="flex flex-wrap justify-center gap-10 text-sm font-semibold text-[#6B3BB9]">
               <a href="#about" className="hover:underline">
                 About
               </a>
@@ -382,34 +460,12 @@ export default function Contact() {
               </a>
             </div>
 
-            <div className="mt-6 flex justify-center gap-4">
-              <a
-                href="https://www.linkedin.com/"
-                target="_blank"
-                rel="noreferrer"
-                className="grid h-11 w-11 place-items-center rounded-xl border border-[#E8DDF8] bg-white shadow-sm hover:shadow-md transition"
-                aria-label="LinkedIn"
-              >
-                <IconLinkedIn className="h-5 w-5 text-[#6B3BB9]" />
-              </a>
-
-              <a
-                href="https://www.instagram.com/"
-                target="_blank"
-                rel="noreferrer"
-                className="grid h-11 w-11 place-items-center rounded-xl border border-[#E8DDF8] bg-white shadow-sm hover:shadow-md transition"
-                aria-label="Instagram"
-              >
-                <IconInstagram className="h-5 w-5 text-[#6B3BB9]" />
-              </a>
-            </div>
-
             <p className="mt-10 text-sm text-[#6B3BB9]">
               © {new Date().getFullYear()} Ridmi Kaveesha — All rights reserved.
             </p>
           </div>
         </footer>
       </div>
-    </section>
+    </div>
   );
 }
