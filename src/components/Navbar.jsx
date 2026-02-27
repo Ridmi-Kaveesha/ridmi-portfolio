@@ -1,99 +1,190 @@
 import { useEffect, useState } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
+
+function cn(...classes) {
+  return classes.filter(Boolean).join(" ");
+}
+
+const links = [
+  { id: "home", label: "Home" },
+  { id: "about", label: "About" },
+  { id: "skills", label: "Skills" },
+  { id: "projects", label: "Projects" },
+  { id: "contact", label: "Contact" },
+];
 
 export default function Navbar() {
-  const links = [
-    { label: "Home", id: "home" },
-    { label: "About", id: "about" },
-    { label: "Skill", id: "skills" },
-    { label: "Project", id: "projects" },
-    { label: "Contact", id: "contact" },
-  ];
+  const [open, setOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
+  const [active, setActive] = useState("home");
 
-  const [activeId, setActiveId] = useState("home");
-  const navigate = useNavigate();
-  const location = useLocation();
-
-  const scrollToId = (id) => {
-    const el = document.getElementById(id);
-    if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
-  };
-
-  // click handler: if not on home route -> go home then scroll
-  const handleNavClick = (id) => (e) => {
-    e.preventDefault();
-
-    if (location.pathname !== "/") {
-      navigate("/", { replace: false });
-      // wait next tick for DOM render
-      setTimeout(() => scrollToId(id), 60);
-    } else {
-      scrollToId(id);
-    }
-
-    setActiveId(id);
-  };
-
-  // Active highlight on scroll ONLY when on "/"
+  // Body scroll lock when menu open
   useEffect(() => {
-    if (location.pathname !== "/") return;
+    const prev = document.body.style.overflow;
+    document.body.style.overflow = open ? "hidden" : prev || "";
+    return () => {
+      document.body.style.overflow = prev || "";
+    };
+  }, [open]);
 
-    const sections = links
-      .map((l) => document.getElementById(l.id))
-      .filter(Boolean);
+  // Shadow on scroll
+  useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > 8);
+    onScroll();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
 
-    if (sections.length === 0) return;
+  // Active section highlight
+  useEffect(() => {
+    const ids = links.map((l) => l.id);
+    const els = ids.map((id) => document.getElementById(id)).filter(Boolean);
+    if (!els.length) return;
 
-    const observer = new IntersectionObserver(
+    const io = new IntersectionObserver(
       (entries) => {
-        const visible = entries
+        const vis = entries
           .filter((e) => e.isIntersecting)
           .sort((a, b) => b.intersectionRatio - a.intersectionRatio)[0];
-
-        if (visible?.target?.id) setActiveId(visible.target.id);
+        if (vis?.target?.id) setActive(vis.target.id);
       },
-      { threshold: [0.2, 0.35, 0.5, 0.65] }
+      { root: null, threshold: [0.2, 0.35, 0.5] }
     );
 
-    sections.forEach((sec) => observer.observe(sec));
-    return () => observer.disconnect();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [location.pathname]);
+    els.forEach((el) => io.observe(el));
+    return () => io.disconnect();
+  }, []);
+
+  const go = (id) => {
+    setOpen(false);
+    const el = document.getElementById(id);
+    if (!el) return;
+    el.scrollIntoView({ behavior: "smooth", block: "start" });
+  };
 
   return (
-    <header className="w-full sticky top-0 z-50">
-      <div className="h-16 bg-[#4A2E73]">
-        <div className="mx-auto max-w-6xl h-full px-6 flex items-center">
-          {/* Logo */}
-          <div className="w-32 flex items-center">
-            <img src="/logo.png" alt="RK Logo" className="h-20 w-auto" />
-          </div>
+    <header
+      className={cn(
+        "fixed top-0 left-0 right-0 z-50",
+        "bg-[#2B1453]/80 backdrop-blur",
+        scrolled ? "shadow-lg shadow-black/10 border-b border-white/10" : ""
+      )}
+    >
+      <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+        {/* Brand (Logo with Glow Animation) */}
+        <button
+          type="button"
+          onClick={() => go("home")}
+          className="relative flex items-center group focus:outline-none focus:ring-2 focus:ring-[#BDA6FF]/40 rounded-2xl"
+          aria-label="Go to home"
+        >
+          {/* Glow background (bigger so it doesn't get cropped) */}
+          <span
+            className="
+              pointer-events-none absolute -inset-3 rounded-full
+              bg-[#BDA6FF]/25 blur-xl opacity-0
+              transition duration-300
+              group-hover:opacity-100
+            "
+          />
 
-          {/* Links */}
-          <nav className="flex-1 flex justify-end pr-24 gap-10 text-white/95 text-sm font-semibold">
+          <img
+            src="/logo.png"
+            alt="Ridmi logo"
+            className="
+              relative h-16 w-auto object-contain
+              transition duration-300
+              group-hover:scale-110 group-hover:rotate-3
+            "
+          />
+        </button>
+
+        {/* Desktop nav */}
+        <nav className="hidden md:flex items-center gap-8">
+          {links.map((l) => {
+            const isActive = active === l.id;
+            return (
+              <button
+                key={l.id}
+                type="button"
+                onClick={() => go(l.id)}
+                className={cn(
+                  "text-sm font-semibold transition",
+                  isActive ? "text-white" : "text-white/75 hover:text-white"
+                )}
+              >
+                <span className="relative">
+                  {l.label}
+                  <span
+                    className={cn(
+                      "absolute left-0 -bottom-2 h-[2px] rounded-full bg-[#BDA6FF] transition-all",
+                      isActive ? "w-full opacity-100" : "w-0 opacity-0"
+                    )}
+                  />
+                </span>
+              </button>
+            );
+          })}
+        </nav>
+
+        {/* Mobile button */}
+        <button
+          type="button"
+          onClick={() => setOpen((v) => !v)}
+          className="md:hidden grid h-11 w-11 place-items-center rounded-2xl
+                     bg-white/10 border border-white/15 text-white
+                     hover:bg-white/15 transition
+                     focus:outline-none focus:ring-2 focus:ring-[#BDA6FF]/40"
+          aria-label="Open menu"
+          aria-expanded={open}
+        >
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
+            {open ? (
+              <path
+                d="M6 6l12 12M18 6L6 18"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+              />
+            ) : (
+              <path
+                d="M4 7h16M4 12h16M4 17h16"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+              />
+            )}
+          </svg>
+        </button>
+      </div>
+
+      {/* Mobile drawer */}
+      <div
+        className={cn(
+          "md:hidden overflow-hidden transition-[max-height] duration-300",
+          open ? "max-h-[360px]" : "max-h-0"
+        )}
+      >
+        <div className="px-4 sm:px-6 pb-6 pt-2 bg-[#2B1453]/95 border-t border-white/10">
+          <div className="grid gap-2">
             {links.map((l) => {
-              const isActive = location.pathname === "/" && activeId === l.id;
-
+              const isActive = active === l.id;
               return (
-                <a
+                <button
                   key={l.id}
-                  href={`#${l.id}`}
-                  onClick={handleNavClick(l.id)}
-                  className={[
-                    "relative px-4 py-2 rounded-full transition duration-200",
-                    "hover:bg-white/15 hover:text-white",
-                    "after:absolute after:left-1/2 after:-bottom-1 after:h-[2px] after:w-0 after:-translate-x-1/2 after:bg-white after:transition-all after:duration-200",
-                    "hover:after:w-6",
+                  type="button"
+                  onClick={() => go(l.id)}
+                  className={cn(
+                    "w-full text-left px-4 py-3 rounded-2xl text-sm font-semibold transition",
                     isActive
-                      ? "bg-white/20 text-white after:w-6"
-                      : "text-white/90",
-                  ].join(" ")}
+                      ? "bg-white/10 text-white"
+                      : "text-white/80 hover:bg-white/10 hover:text-white"
+                  )}
                 >
                   {l.label}
-                </a>
+                </button>
               );
             })}
-          </nav>
+          </div>
         </div>
       </div>
     </header>

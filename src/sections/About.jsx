@@ -63,8 +63,8 @@ I am continuously learning new technologies and improving my skills, with the go
   const typed = useTypewriter(introText, leftIn, 14);
 
   return (
-    <section className="relative bg-white py-20">
-      <div className="mx-auto max-w-6xl px-6">
+    <section className="relative bg-white py-14 sm:py-16 md:py-20 overflow-x-hidden">
+      <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
         {/* Title */}
         <div className="section-heading">
           <h2 className="section-title">About Me</h2>
@@ -73,23 +73,26 @@ I am continuously learning new technologies and improving my skills, with the go
         </div>
 
         {/* Boxes */}
-        <div className="grid grid-cols-1 gap-10 md:grid-cols-12 md:gap-12">
+        <div className="grid grid-cols-1 gap-8 md:grid-cols-12 md:gap-12">
           {/* LEFT BOX */}
           <div className="md:col-span-6">
             <div
               ref={leftRef}
               className={[
-                "card-anim flex h-full flex-col rounded-2xl bg-white p-10 ring-1 ring-[#CDB8FF] md:min-h-[620px]",
+                "card-anim flex h-full flex-col rounded-2xl bg-white",
+                "p-6 sm:p-8 lg:p-10",
+                "ring-1 ring-[#CDB8FF]",
+                "md:min-h-[620px]",
                 leftIn ? "reveal-in" : "reveal-init",
               ].join(" ")}
               style={{ transitionDelay: "60ms" }}
             >
-              <h3 className="mb-6 flex items-center gap-3 text-2xl font-extrabold text-[#1F2A53]">
+              <h3 className="mb-5 sm:mb-6 flex items-center gap-3 text-xl sm:text-2xl font-extrabold text-[#1F2A53]">
                 <span className="text-[#6B3BB9]">✦</span> About Me
               </h3>
 
               {/* Typing text */}
-              <div className="flex-1 whitespace-pre-line text-[16px] leading-8 text-[#1F2A53]/85">
+              <div className="flex-1 whitespace-pre-line break-words text-base sm:text-[16px] leading-relaxed sm:leading-8 text-[#1F2A53]/85">
                 {typed}
                 {leftIn && typed.length < introText.length && (
                   <span className="typing-cursor">|</span>
@@ -103,57 +106,63 @@ I am continuously learning new technologies and improving my skills, with the go
             <div
               ref={rightRef}
               className={[
-                "card-anim flex h-full flex-col rounded-2xl bg-white p-10 ring-1 ring-[#CDB8FF] md:min-h-[620px]",
+                "card-anim flex h-full flex-col rounded-2xl bg-white",
+                "p-6 sm:p-8 lg:p-10",
+                "ring-1 ring-[#CDB8FF]",
+                "md:min-h-[620px]",
                 rightIn ? "reveal-in" : "reveal-init",
               ].join(" ")}
               style={{ transitionDelay: "140ms" }}
             >
-              <h3 className="text-2xl font-extrabold text-[#1F2A53]">
+              <h3 className="text-xl sm:text-2xl font-extrabold text-[#1F2A53] break-words">
                 Education & Qualifications
               </h3>
-              <div className="mt-2 h-[2px] w-44 rounded bg-[#6B3BB9]" />
+
+              <div className="mt-2 h-[2px] w-36 sm:w-44 rounded bg-[#6B3BB9]" />
 
               {/* Education */}
-              <div className="mt-8 space-y-7">
+              <div className="mt-7 sm:mt-8 space-y-6 sm:space-y-7">
                 <div>
                   <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1">
-                    <p className="text-[16px] font-bold text-[#6B3BB9]">
+                    <p className="text-[15px] sm:text-[16px] font-bold text-[#6B3BB9] break-words">
                       BSc (Hons) in Computer Science
                     </p>
-                    <p className="text-[13px] font-semibold text-[#1F2A53]/60">
+                    <p className="text-[12px] sm:text-[13px] font-semibold text-[#1F2A53]/60">
                       2023 – Present
                     </p>
                   </div>
-                  <p className="mt-1 text-[14px] font-semibold text-[#1F2A53]/75">
+                  <p className="mt-1 text-[13px] sm:text-[14px] font-semibold text-[#1F2A53]/75 break-words">
                     SLIIT City University
                   </p>
                 </div>
 
                 <div>
-                  <p className="text-[16px] font-bold text-[#6B3BB9]">
+                  <p className="text-[15px] sm:text-[16px] font-bold text-[#6B3BB9] break-words">
                     GCE Advanced Level (Maths / Physics / Chemistry)
                   </p>
-                  <p className="mt-1 text-[14px] font-semibold text-[#1F2A53]/75">
+                  <p className="mt-1 text-[13px] sm:text-[14px] font-semibold text-[#1F2A53]/75 break-words">
                     K/Gurulogomi Maha Vidyalaya
                   </p>
                 </div>
               </div>
 
               {/* Courses */}
-              <div className="mt-12">
-                <h4 className="text-xl font-extrabold text-[#1F2A53]">
+              <div className="mt-10 sm:mt-12">
+                <h4 className="text-lg sm:text-xl font-extrabold text-[#1F2A53]">
                   Courses & Certifications
                 </h4>
-                <div className="mt-2 h-[2px] w-40 rounded bg-[#6B3BB9]" />
+                <div className="mt-2 h-[2px] w-32 sm:w-40 rounded bg-[#6B3BB9]" />
 
-                <ul className="mt-5 space-y-3 text-[15px] font-semibold text-[#6B3BB9]">
+                <ul className="mt-4 sm:mt-5 space-y-3 text-[14px] sm:text-[15px] font-semibold text-[#6B3BB9]">
                   <li className="flex items-start gap-2">
                     <span className="mt-2 h-2 w-2 rounded-full bg-[#6B3BB9]" />
-                    <span>Web Development Course</span>
+                    <span className="break-words">Web Development Course</span>
                   </li>
                   <li className="flex items-start gap-2">
                     <span className="mt-2 h-2 w-2 rounded-full bg-[#6B3BB9]" />
-                    <span>Project Management Course</span>
+                    <span className="break-words">
+                      Project Management Course
+                    </span>
                   </li>
                 </ul>
               </div>

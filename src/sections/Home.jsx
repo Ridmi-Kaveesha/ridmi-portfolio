@@ -9,9 +9,9 @@ export default function Home() {
 
   // Roles (type one-by-one, then show all together)
   const roles = ["Frontend Developer", "UI/UX Designer", "QA Enthusiast"];
-  const [roleStep, setRoleStep] = useState(0); // 0..2 typing, 3 = all shown
-  const [roleTyped, setRoleTyped] = useState(""); // current role typing text
-  const [doneRoles, setDoneRoles] = useState([]); // finished roles array
+  const [roleStep, setRoleStep] = useState(0);
+  const [roleTyped, setRoleTyped] = useState("");
+  const [doneRoles, setDoneRoles] = useState([]);
 
   // Show controls
   const [showRoleLine, setShowRoleLine] = useState(false);
@@ -27,8 +27,6 @@ export default function Home() {
       if (i >= fullTitle.length) {
         clearInterval(t);
         setTitleDone(true);
-
-        // start roles after title
         setTimeout(() => setShowRoleLine(true), 250);
       }
     }, 55);
@@ -40,7 +38,7 @@ export default function Home() {
   useEffect(() => {
     if (!titleDone) return;
     if (!showRoleLine) return;
-    if (roleStep >= roles.length) return; // finished all
+    if (roleStep >= roles.length) return;
 
     const current = roles[roleStep];
 
@@ -48,13 +46,10 @@ export default function Home() {
       const next = current.slice(0, roleTyped.length + 1);
       setRoleTyped(next);
 
-      // finished current role
       if (next === current) {
-        // store it
         setDoneRoles((prev) => [...prev, current]);
         setRoleTyped("");
 
-        // move to next role after small pause
         setTimeout(() => {
           setRoleStep((s) => s + 1);
         }, 350);
@@ -82,56 +77,59 @@ export default function Home() {
   return (
     <section
       id="home"
-      className="relative min-h-[calc(100vh-64px)] hero-bg flex items-center overflow-hidden"
+      className="relative min-h-[calc(100vh-64px)] hero-bg flex items-center overflow-x-hidden"
     >
-      <div className="mx-auto max-w-6xl w-full px-6">
-        <div className="grid grid-cols-12 items-center gap-y-10">
-          {/* LEFT IMAGE */}
-          <div className="col-span-12 md:col-span-5 flex justify-center md:justify-start">
-            <div className="relative -mt-6">
-              <div className="absolute -inset-12 rounded-full bg-purple-300/60 blur-3xl" />
+      <div className="mx-auto max-w-6xl w-full px-4 sm:px-6 lg:px-8">
+        {/* Mobile: 1 col | Desktop: 2 col */}
+        <div className="grid grid-cols-1 md:grid-cols-12 items-center gap-10 md:gap-y-10">
+          {/* IMAGE */}
+          <div className="md:col-span-5 flex justify-center md:justify-start">
+            <div className="relative">
+              <div className="absolute -inset-10 sm:-inset-12 rounded-full bg-purple-300/60 blur-3xl" />
+
               <img
                 src="/girl.png"
                 alt="profile"
-                className="relative hero-float w-80 sm:w-96 md:w-[420px] lg:w-[460px] drop-shadow-xl md:translate-x-10"
+                className="
+                  relative hero-float drop-shadow-xl
+                  w-[260px] xs:w-[300px] sm:w-[360px] md:w-[420px] lg:w-[460px]
+                  mx-auto md:mx-0
+                  md:translate-x-10
+                "
               />
             </div>
           </div>
 
-          {/* RIGHT CONTENT */}
-          <div className="col-span-12 md:col-span-7 text-center md:text-left md:pl-16 md:translate-x-10">
+          {/* CONTENT */}
+          <div className="md:col-span-7 text-center md:text-left md:pl-12 lg:pl-16 md:translate-x-6 lg:translate-x-10">
             {/* Title */}
-            <h1 className="text-4xl md:text-5xl font-extrabold text-[#1F2A53]">
-            {titleTyped}
-            {titleTyped.length < fullTitle.length && (
-  <span className="typing-cursor">|</span>
-            )}
+            <h1 className="text-3xl sm:text-4xl md:text-5xl font-extrabold text-[#1F2A53] leading-tight break-words">
+              {titleTyped}
+              {titleTyped.length < fullTitle.length && (
+                <span className="typing-cursor">|</span>
+              )}
             </h1>
 
             {/* Roles line */}
-            <p className="mt-4 text-lg md:text-xl text-[#6B3BB9] font-semibold min-h-[30px]">
+            <p className="mt-4 text-base sm:text-lg md:text-xl text-[#6B3BB9] font-semibold min-h-[28px]">
               {!showRoleLine ? null : (
                 <>
-                  {/* Show typed sequence until all roles done */}
                   {!allRolesDone ? (
                     <span className="fade-up">
-                      {/* show completed roles first */}
                       {doneRoles.length > 0 && (
-                        <span>
+                        <span className="break-words">
                           {doneRoles.join(" | ")}
                           <span className="mx-2 opacity-70">|</span>
                         </span>
                       )}
 
-                      {/* typing current role */}
-                      <span>
+                      <span className="break-words">
                         {roleTyped}
                         <span className="typing-cursor">|</span>
                       </span>
                     </span>
                   ) : (
-                    /* After all typed: show all together */
-                    <span className="fade-up">
+                    <span className="fade-up break-words">
                       {roles.join(" | ")}
                     </span>
                   )}
@@ -145,7 +143,16 @@ export default function Home() {
                 href="/CV.pdf"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center gap-2 px-8 py-2.5 rounded-xl bg-gradient-to-r from-[#4A2E73] to-[#6B3BB9] text-white font-medium shadow-md transition duration-300 hover:from-[#6B3BB9] hover:to-[#8B5CF6] hover:scale-105 hover:shadow-lg"
+                className="
+                  inline-flex items-center justify-center gap-2
+                  w-full sm:w-auto
+                  px-7 sm:px-8 py-2.5
+                  rounded-xl
+                  bg-gradient-to-r from-[#4A2E73] to-[#6B3BB9]
+                  text-white font-medium
+                  shadow-md transition duration-300
+                  hover:from-[#6B3BB9] hover:to-[#8B5CF6] hover:scale-105 hover:shadow-lg
+                "
               >
                 <FaDownload />
                 Check Resume
@@ -154,9 +161,11 @@ export default function Home() {
 
             {/* Social Icons */}
             <div
-              className={`mt-7 flex items-center gap-6 justify-center md:justify-start ${
-                showIcons ? "fade-up" : "opacity-0"
-              }`}
+              className={`
+                mt-7 flex items-center gap-5 sm:gap-6
+                justify-center md:justify-start
+                ${showIcons ? "fade-up" : "opacity-0"}
+              `}
             >
               <a
                 href="https://github.com/Ridmi-Kaveesha"

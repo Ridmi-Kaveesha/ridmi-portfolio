@@ -16,12 +16,15 @@ function ArrowButton({ dir = "right", onClick, hidden, disabled }) {
       disabled={disabled}
       className={cn(
         "group absolute top-1/2 -translate-y-1/2 z-20",
-        "h-12 w-12 rounded-full",
-        "bg-white/80 backdrop-blur border border-[#E8DDF8]",
+        "h-11 w-11 sm:h-12 sm:w-12 rounded-full",
+        "bg-white/85 backdrop-blur border border-[#E8DDF8]",
         "shadow-md hover:shadow-lg transition",
         "focus:outline-none focus:ring-2 focus:ring-[#6B3BB9]/40",
         "disabled:opacity-40 disabled:cursor-not-allowed",
-        dir === "left" ? "-left-6" : "-right-6"
+        // Mobile: inside | Desktop: outside
+        dir === "left"
+          ? "left-2 sm:left-3 md:-left-6"
+          : "right-2 sm:right-3 md:-right-6"
       )}
       aria-label={dir === "left" ? "Previous projects" : "Next projects"}
     >
@@ -36,11 +39,7 @@ function ArrowButton({ dir = "right", onClick, hidden, disabled }) {
         stroke="currentColor"
         strokeWidth="2"
       >
-        {dir === "left" ? (
-          <path d="M15 18l-6-6 6-6" />
-        ) : (
-          <path d="M9 6l6 6-6 6" />
-        )}
+        {dir === "left" ? <path d="M15 18l-6-6 6-6" /> : <path d="M9 6l6 6-6 6" />}
       </svg>
     </button>
   );
@@ -74,7 +73,7 @@ function ProjectCard({ project, onOpenCaseStudy }) {
       )}
     >
       {/* Image */}
-      <div className="relative h-52 md:h-56 overflow-hidden">
+      <div className="relative h-52 sm:h-56 overflow-hidden">
         <img
           src={project.image}
           alt={project.title}
@@ -103,8 +102,8 @@ function ProjectCard({ project, onOpenCaseStudy }) {
       </div>
 
       {/* Content */}
-      <div className="p-6 md:p-7">
-        <h3 className="about-title text-3xl text-[#1F2A53] leading-tight">
+      <div className="p-5 sm:p-6 md:p-7">
+        <h3 className="about-title text-2xl sm:text-3xl text-[#1F2A53] leading-tight">
           {project.title}
         </h3>
 
@@ -118,11 +117,13 @@ function ProjectCard({ project, onOpenCaseStudy }) {
           {project.desc}
         </p>
 
-        <div className="mt-6 flex items-center justify-between gap-4">
+        <div className="mt-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-4">
+          {/* Modal open */}
           <button
             type="button"
             onClick={() => onOpenCaseStudy(project)}
             className={cn(
+              "w-full sm:w-auto",
               "px-6 py-2.5 rounded-2xl",
               "bg-[#4A2E73] text-white font-medium",
               "shadow-md transition",
@@ -130,17 +131,24 @@ function ProjectCard({ project, onOpenCaseStudy }) {
               "focus:outline-none focus:ring-2 focus:ring-[#6B3BB9]/40"
             )}
           >
-            View Case Study
+            View
           </button>
 
-          {/* If you want this ALSO to open popup (not go external) */}
-          <button
-            type="button"
-            onClick={() => onOpenCaseStudy(project)}
-            className="text-sm font-semibold text-[#6B3BB9] hover:underline"
-          >
-            Live →
-          </button>
+          {/* Live link (external) */}
+          {project.links?.live ? (
+            <a
+              href={project.links.live}
+              target="_blank"
+              rel="noreferrer"
+              className="text-sm font-semibold text-[#6B3BB9] hover:underline text-center sm:text-left"
+            >
+              Live →
+            </a>
+          ) : (
+            <span className="text-sm font-semibold text-[#1F2A53]/40 cursor-not-allowed text-center sm:text-left">
+              Live →
+            </span>
+          )}
         </div>
       </div>
     </div>
@@ -173,7 +181,7 @@ function CaseStudyModal({ project, onClose }) {
 
   const cs = project.caseStudy || {};
 
-  // ✅ Portal: always renders above everything
+  // Portal modal
   return createPortal(
     <div
       className="fixed inset-0 z-[9999] flex items-center justify-center px-4"
@@ -188,14 +196,15 @@ function CaseStudyModal({ project, onClose }) {
         className={cn(
           "relative w-full max-w-3xl overflow-hidden rounded-3xl",
           "bg-white border border-[#E8DDF8]",
-          "shadow-[0_40px_120px_rgba(0,0,0,0.25)]"
+          "shadow-[0_40px_120px_rgba(0,0,0,0.25)]",
+          "max-h-[85vh]"
         )}
         onClick={(e) => e.stopPropagation()}
       >
-        <div className="p-6 md:p-8">
+        <div className="p-5 sm:p-6 md:p-8 overflow-y-auto max-h-[85vh]">
           <div className="flex items-start justify-between gap-4">
             <div>
-              <h3 className="about-title text-3xl text-[#1F2A53]">
+              <h3 className="about-title text-2xl sm:text-3xl text-[#1F2A53]">
                 {project.title}
               </h3>
 
@@ -234,7 +243,7 @@ function CaseStudyModal({ project, onClose }) {
               <img
                 src={project.image}
                 alt={project.title}
-                className="h-56 w-full object-cover"
+                className="h-52 sm:h-56 w-full object-cover"
                 loading="lazy"
               />
             </div>
@@ -273,13 +282,13 @@ function CaseStudyModal({ project, onClose }) {
             </div>
           </div>
 
-          <div className="mt-7 flex flex-wrap items-center justify-end gap-3">
+          <div className="mt-7 flex flex-col sm:flex-row flex-wrap items-stretch sm:items-center justify-end gap-3">
             {project.links?.github ? (
               <a
                 href={project.links.github}
                 target="_blank"
                 rel="noreferrer"
-                className="px-5 py-2.5 rounded-2xl border border-[#E8DDF8] text-[#4A2E73] font-semibold hover:bg-[#F6F2FF] transition"
+                className="text-center px-5 py-2.5 rounded-2xl border border-[#E8DDF8] text-[#4A2E73] font-semibold hover:bg-[#F6F2FF] transition"
               >
                 GitHub
               </a>
@@ -290,7 +299,7 @@ function CaseStudyModal({ project, onClose }) {
                 href={project.links.live}
                 target="_blank"
                 rel="noreferrer"
-                className="px-5 py-2.5 rounded-2xl bg-[#4A2E73] text-white font-semibold hover:bg-[#5B3A8B] transition"
+                className="text-center px-5 py-2.5 rounded-2xl bg-[#4A2E73] text-white font-semibold hover:bg-[#5B3A8B] transition"
               >
                 Open Live
               </a>
@@ -298,7 +307,7 @@ function CaseStudyModal({ project, onClose }) {
 
             <button
               onClick={onClose}
-              className="px-5 py-2.5 rounded-2xl text-[#6B3BB9] hover:underline"
+              className="text-center px-5 py-2.5 rounded-2xl text-[#6B3BB9] hover:underline"
               type="button"
             >
               Close
@@ -346,28 +355,24 @@ export default function Projects() {
 
   const openAll = () => {
     setShowAll(true);
-    setTimeout(
-      () => allRef.current?.scrollIntoView({ behavior: "smooth", block: "start" }),
-      60
-    );
+    setTimeout(() => {
+      allRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+    }, 60);
   };
 
   return (
-    <div className="min-h-screen bg-white px-6 py-16 md:py-20">
-      <div className="mx-auto max-w-6xl">
-        <div className="flex flex-col gap-6 md:flex-row md:items-end md:justify-between">
-          <div className="section-heading md:text-left md:mb-0">
-            <h2 className="section-title md:text-left">Projects</h2>
-            <div className="section-underline md:mx-0" />
-            <p className="section-subtitle md:text-left">
-              Selected works & case studies
-            </p>
-          </div>
+    <section id="projects" className="bg-white py-14 sm:py-16 md:py-20">
+      <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
+        {/* Header */}
+        <div className="flex flex-col items-center text-center gap-4">
+          <h2 className="section-title">Projects</h2>
+          <div className="section-underline mx-auto" />
+          <p className="section-subtitle">From Concept to Deployment</p>
 
           <button
             type="button"
             onClick={openAll}
-            className="px-6 py-2.5 rounded-2xl bg-[#4A2E73] text-white font-semibold shadow-md hover:shadow-lg hover:bg-[#5B3A8B] transition"
+            className="mt-3 w-full sm:w-auto px-6 py-2.5 rounded-2xl bg-[#4A2E73] text-white font-semibold shadow-md hover:shadow-lg hover:bg-[#5B3A8B] transition"
           >
             View More
           </button>
@@ -387,7 +392,7 @@ export default function Projects() {
             disabled={!canNext}
           />
 
-          <div className="grid gap-7 md:grid-cols-2">
+          <div className="grid gap-6 md:gap-7 md:grid-cols-2">
             {(pages[page] || []).map((proj) => (
               <ProjectCard
                 key={proj.id}
@@ -406,7 +411,9 @@ export default function Projects() {
                   onClick={() => setPage(i)}
                   className={cn(
                     "h-2.5 w-2.5 rounded-full transition",
-                    i === page ? "bg-[#4A2E73]" : "bg-[#E8DDF8] hover:bg-[#C9B7F6]"
+                    i === page
+                      ? "bg-[#4A2E73]"
+                      : "bg-[#E8DDF8] hover:bg-[#C9B7F6]"
                   )}
                   aria-label={`Go to page ${i + 1}`}
                 />
@@ -416,9 +423,9 @@ export default function Projects() {
         </div>
 
         {showAll ? (
-          <div ref={allRef} className="mt-16 md:mt-20">
-            <div className="flex items-center justify-between gap-4">
-              <h3 className="about-title text-4xl text-[#1F2A53]">
+          <div ref={allRef} className="mt-14 sm:mt-16 md:mt-20">
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+              <h3 className="about-title text-3xl sm:text-4xl text-[#1F2A53]">
                 All Projects
               </h3>
               <button
@@ -433,7 +440,7 @@ export default function Projects() {
               </button>
             </div>
 
-            <div className="mt-8 grid gap-7 sm:grid-cols-2">
+            <div className="mt-8 grid gap-6 sm:grid-cols-2">
               {projects.map((proj) => (
                 <ProjectCard
                   key={proj.id}
@@ -446,11 +453,10 @@ export default function Projects() {
         ) : null}
       </div>
 
-      {/* ✅ Portal modal */}
       <CaseStudyModal
         project={activeProject}
         onClose={() => setActiveProject(null)}
       />
-    </div>
+    </section>
   );
 }
