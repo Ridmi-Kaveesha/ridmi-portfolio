@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from "react";
+import emailjs from "@emailjs/browser";
 import {
   FaEnvelope,
   FaPhoneAlt,
@@ -10,20 +11,6 @@ import {
 
 function cn(...classes) {
   return classes.filter(Boolean).join(" ");
-}
-
-function buildMailTo({ to, name, email, subject, message }) {
-  const finalSubject = subject?.trim() || "Portfolio Contact";
-  const body = [
-    `Name: ${name || "-"}`,
-    `Email: ${email || "-"}`,
-    "",
-    message || "",
-  ].join("\n");
-
-  return `mailto:${to}?subject=${encodeURIComponent(
-    finalSubject
-  )}&body=${encodeURIComponent(body)}`;
 }
 
 /* ---------- Tooltip Icon ---------- */
@@ -104,7 +91,6 @@ function InfoRow({
         </div>
       </div>
 
-      {/* copy (optional) */}
       {copyValue ? (
         <button
           type="button"
@@ -222,6 +208,11 @@ export default function Contact() {
   const LOCATION = "Sri Lanka";
   const LINKEDIN_URL = "https://www.linkedin.com/";
 
+  // ✅ EmailJS IDs
+  const SERVICE_ID = "service_e3owkn2";
+  const TEMPLATE_ID = "k3esnx1";
+  const PUBLIC_KEY = "MGomnIjRnUhnxAtHb";
+
   const [form, setForm] = useState({
     email: "",
     name: "",
@@ -232,6 +223,7 @@ export default function Contact() {
   const [touched, setTouched] = useState({});
   const [hint, setHint] = useState("");
   const [copiedKey, setCopiedKey] = useState("");
+  const [status, setStatus] = useState("idle"); // idle | sending | success | error
 
   const errors = useMemo(() => {
     const e = {};
@@ -245,23 +237,50 @@ export default function Contact() {
     return e;
   }, [form]);
 
-  const mailto = useMemo(() => buildMailTo({ to: TO_EMAIL, ...form }), [form]);
-
   const onChange = (key) => (e) =>
     setForm((prev) => ({ ...prev, [key]: e.target.value }));
 
-  const canSubmit = Object.keys(errors).length === 0;
+  const canSubmit = Object.keys(errors).length === 0 && status !== "sending";
 
-  const onSubmit = (e) => {
+  const onSubmit = async (e) => {
     e.preventDefault();
     setTouched({ email: true, message: true });
     if (!canSubmit) return;
 
-    setHint("Opening your email app…");
-    setTimeout(() => {
-      window.location.href = mailto;
-      setTimeout(() => setHint(""), 1200);
-    }, 120);
+    try {
+      setStatus("sending");
+      setHint("Sending…");
+
+      await emailjs.send(
+        SERVICE_ID,
+        TEMPLATE_ID,
+        {
+          name: form.name || "Anonymous",
+          email: form.email,
+          subject: form.subject || "Portfolio Contact",
+          message: form.message,
+          to_email: TO_EMAIL, // (optional) template එකේ යොදාගන්න පුළුවන්
+        },
+        PUBLIC_KEY
+      );
+
+      setStatus("success");
+      setHint("Message sent ✅");
+      setForm({ email: "", name: "", subject: "", message: "" });
+      setTouched({});
+
+      setTimeout(() => {
+        setStatus("idle");
+        setHint("");
+      }, 2000);
+    } catch (err) {
+      setStatus("error");
+      setHint("Failed to send. Try again.");
+      setTimeout(() => {
+        setStatus("idle");
+        setHint("");
+      }, 2500);
+    }
   };
 
   const copy = async (key, value) => {
@@ -279,7 +298,6 @@ export default function Contact() {
   return (
     <section id="contact" className="section-wrap overflow-x-hidden">
       <div ref={wrapRef} className="section-container">
-        {/* Section Title */}
         <div className="section-heading">
           <h2 className="section-title">Contact</h2>
           <div className="section-underline" />
@@ -368,7 +386,6 @@ export default function Contact() {
                 "shadow-[0_28px_90px_rgba(18,16,46,0.22)]"
               )}
             >
-              {/* modern glows */}
               <div className="pointer-events-none absolute -top-28 -right-28 h-80 w-80 rounded-full bg-white/10 blur-3xl" />
               <div className="pointer-events-none absolute -bottom-28 -left-28 h-80 w-80 rounded-full bg-fuchsia-300/15 blur-3xl" />
               <div className="pointer-events-none absolute inset-0 bg-white/5 backdrop-blur-[2px]" />
@@ -379,7 +396,7 @@ export default function Contact() {
                     Send a message
                   </h3>
                   <p className="mt-1 text-sm text-white/70">
-                    I’ll reply as soon as possible.
+                    {hint ? hint : "I’ll reply as soon as possible."}
                   </p>
                 </div>
 
@@ -424,7 +441,7 @@ export default function Contact() {
 
                   <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 pt-2">
                     <p className="text-xs font-semibold text-white/70">
-                      {hint ? hint : " Keep it short & clear ✨"}
+                      {status === "idle" ? "Keep it short & clear ✨" : ""}
                     </p>
 
                     <button
@@ -439,7 +456,7 @@ export default function Contact() {
                         "disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:translate-y-0"
                       )}
                     >
-                      Send
+                      {status === "sending" ? "Sending…" : "Send"}
                     </button>
                   </div>
                 </div>
@@ -448,22 +465,13 @@ export default function Contact() {
           </div>
         </div>
 
-        {/* FOOTER (NO ICONS) */}
         <footer className="mt-16 sm:mt-20 md:mt-24 border-t border-[#E8DDF8] pt-8 sm:pt-10">
           <div className="text-center">
             <div className="flex flex-wrap justify-center gap-x-8 gap-y-4 text-sm font-semibold text-[#6B3BB9]">
-              <a href="#about" className="hover:underline">
-                About
-              </a>
-              <a href="#skills" className="hover:underline">
-                Skills
-              </a>
-              <a href="#projects" className="hover:underline">
-                Projects
-              </a>
-              <a href="#contact" className="hover:underline">
-                Contact
-              </a>
+              <a href="#about" className="hover:underline">About</a>
+              <a href="#skills" className="hover:underline">Skills</a>
+              <a href="#projects" className="hover:underline">Projects</a>
+              <a href="#contact" className="hover:underline">Contact</a>
             </div>
 
             <p className="mt-8 sm:mt-10 text-sm text-[#6B3BB9]">
