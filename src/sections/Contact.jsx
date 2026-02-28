@@ -1,5 +1,4 @@
 import { useEffect, useMemo, useRef, useState } from "react";
-import emailjs from "@emailjs/browser";
 import {
   FaEnvelope,
   FaPhoneAlt,
@@ -11,6 +10,20 @@ import {
 
 function cn(...classes) {
   return classes.filter(Boolean).join(" ");
+}
+
+function buildMailTo({ to, name, email, subject, message }) {
+  const finalSubject = subject?.trim() || "Portfolio Contact";
+  const body = [
+    `Name: ${name || "-"}`,
+    `Email: ${email || "-"}`,
+    "",
+    message || "",
+  ].join("\n");
+
+  return `mailto:${to}?subject=${encodeURIComponent(
+    finalSubject
+  )}&body=${encodeURIComponent(body)}`;
 }
 
 /* ---------- Tooltip Icon ---------- */
@@ -28,7 +41,6 @@ function IconWithTooltip({ Icon, tip }) {
         <Icon className="h-5 w-5 text-[#6B3BB9]" />
       </span>
 
-      {/* Tooltip */}
       <span
         className={cn(
           "pointer-events-none absolute left-1/2 -translate-x-1/2 -top-2 -translate-y-full",
@@ -210,11 +222,6 @@ export default function Contact() {
   const LOCATION = "Sri Lanka";
   const LINKEDIN_URL = "https://www.linkedin.com/";
 
-  // ✅ EmailJS config
-  const SERVICE_ID = "service_e3owkn2";
-  const TEMPLATE_ID = "template_36fp5as";
-  const PUBLIC_KEY = "MGomnIjRnUhnxAtHb";
-
   const [form, setForm] = useState({
     email: "",
     name: "",
@@ -223,8 +230,8 @@ export default function Contact() {
   });
 
   const [touched, setTouched] = useState({});
+  const [hint, setHint] = useState("");
   const [copiedKey, setCopiedKey] = useState("");
-  const [status, setStatus] = useState("idle"); // idle | sending | success | error
 
   const errors = useMemo(() => {
     const e = {};
@@ -238,48 +245,23 @@ export default function Contact() {
     return e;
   }, [form]);
 
+  const mailto = useMemo(() => buildMailTo({ to: TO_EMAIL, ...form }), [form]);
+
   const onChange = (key) => (e) =>
     setForm((prev) => ({ ...prev, [key]: e.target.value }));
 
-  const canSubmit = Object.keys(errors).length === 0 && status !== "sending";
+  const canSubmit = Object.keys(errors).length === 0;
 
-  const hint = useMemo(() => {
-    if (status === "sending") return "Sending…";
-    if (status === "success") return "Message sent ✅";
-    if (status === "error") return "Failed to send. Try again.";
-    return "";
-  }, [status]);
-
-  const onSubmit = async (e) => {
+  const onSubmit = (e) => {
     e.preventDefault();
     setTouched({ email: true, message: true });
     if (!canSubmit) return;
 
-    try {
-      setStatus("sending");
-
-      await emailjs.send(
-        SERVICE_ID,
-        TEMPLATE_ID,
-        {
-          name: form.name || "Anonymous",
-          email: form.email,
-          subject: form.subject || "Portfolio Contact",
-          message: form.message,
-          to_email: TO_EMAIL, // optional
-        },
-        PUBLIC_KEY
-      );
-
-      setStatus("success");
-      setForm({ email: "", name: "", subject: "", message: "" });
-      setTouched({});
-      setTimeout(() => setStatus("idle"), 2000);
-    } catch (err) {
-      console.log("EmailJS error:", err);
-      setStatus("error");
-      setTimeout(() => setStatus("idle"), 2500);
-    }
+    setHint("Opening your email app…");
+    setTimeout(() => {
+      window.location.href = mailto;
+      setTimeout(() => setHint(""), 1200);
+    }, 120);
   };
 
   const copy = async (key, value) => {
@@ -295,7 +277,7 @@ export default function Contact() {
   const [wrapRef, inView] = useRevealOnce();
 
   return (
-    <section className="section-wrap overflow-x-hidden">
+    <section id="contact" className="section-wrap overflow-x-hidden">
       <div ref={wrapRef} className="section-container">
         {/* Section Title */}
         <div className="section-heading">
@@ -397,7 +379,7 @@ export default function Contact() {
                     Send a message
                   </h3>
                   <p className="mt-1 text-sm text-white/70">
-                    {hint ? hint : "I’ll reply as soon as possible."}
+                    I’ll reply as soon as possible.
                   </p>
                 </div>
 
@@ -442,7 +424,7 @@ export default function Contact() {
 
                   <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 pt-2">
                     <p className="text-xs font-semibold text-white/70">
-                      {status === "idle" ? "Keep it short & clear ✨" : ""}
+                      {hint ? hint : " Keep it short & clear ✨"}
                     </p>
 
                     <button
@@ -457,7 +439,7 @@ export default function Contact() {
                         "disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:translate-y-0"
                       )}
                     >
-                      {status === "sending" ? "Sending…" : "Send"}
+                      Send
                     </button>
                   </div>
                 </div>
@@ -466,7 +448,7 @@ export default function Contact() {
           </div>
         </div>
 
-        {/* FOOTER */}
+        {/* FOOTER (NO ICONS) */}
         <footer className="mt-16 sm:mt-20 md:mt-24 border-t border-[#E8DDF8] pt-8 sm:pt-10">
           <div className="text-center">
             <div className="flex flex-wrap justify-center gap-x-8 gap-y-4 text-sm font-semibold text-[#6B3BB9]">
