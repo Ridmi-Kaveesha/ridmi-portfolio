@@ -23,6 +23,52 @@
     }
   },
   {
+    "id": "red-restaurant-app",
+    "title": "Red",
+    "subtitle": "Android Restaurant App",
+    "desc": "An Android-based food delivery application designed for a restaurant’s online ordering system. Users can browse menus, customize orders, and schedule deliveries.",
+    "status": "Completed",
+    "image": "/projectpics/resturant.png",
+    "tags": ["Android", "Java", "Food Delivery"],
+    "caseStudy": {
+      "role": "Android Developer",
+      "tools": ["Java", "Android Studio"],
+      "highlights": [
+        "Menu browsing with item customization",
+        "Optimized order and checkout flow",
+        "Delivery scheduling functionality",
+        "User-friendly Android interface"
+      ]
+    },
+    "links": {
+      "live": "https://example.com",
+      "github": "https://github.com/example"
+    }
+  },
+  {
+    "id": "my-portfolio",
+    "title": "Personal Portfolio Website",
+    "subtitle": "Modern React Portfolio",
+    "desc": "A modern personal portfolio website showcasing projects, skills, and experience using a clean UI design system with smooth layout and responsive structure.",
+    "status": "Completed",
+    "image": "/projectpics/portfolio.png",
+    "tags": ["Portfolio", "React", "Tailwind", "UI Design"],
+    "caseStudy": {
+      "role": "Frontend Developer",
+      "tools": ["React.js", "Tailwind CSS", "Figma"],
+      "highlights": [
+        "Section-based modern layout",
+        "Reusable UI components",
+        "Responsive grid system",
+        "Project modal case-study view"
+      ]
+    },
+    "links": {
+      "live": "https://ridmi-portfolio-six.vercel.app/",
+      "github": "https://github.com/Ridmi-Kaveesha/ridmi-portfolio"
+    }
+  },
+  {
     "id": "rajapakshe-pharmacy",
     "title": "Rajapakshe Pharmacy",
     "subtitle": "MERN Stack Web Application",
@@ -68,29 +114,7 @@
       "github": "https://github.com/Ridmi-Kaveesha/ridmi-portfolio"
     }
   },
-  {
-    "id": "red-restaurant-app",
-    "title": "Red",
-    "subtitle": "Android Restaurant App",
-    "desc": "An Android-based food delivery application designed for a restaurant’s online ordering system. Users can browse menus, customize orders, and schedule deliveries.",
-    "status": "Completed",
-    "image": "/projectpics/resturant.png",
-    "tags": ["Android", "Java", "Food Delivery"],
-    "caseStudy": {
-      "role": "Android Developer",
-      "tools": ["Java", "Android Studio"],
-      "highlights": [
-        "Menu browsing with item customization",
-        "Optimized order and checkout flow",
-        "Delivery scheduling functionality",
-        "User-friendly Android interface"
-      ]
-    },
-    "links": {
-      "live": "https://example.com",
-      "github": "https://github.com/example"
-    }
-  },
+  
   {
     "id": "sri-lanka-roads",
     "title": "Sri Lanka Roads",

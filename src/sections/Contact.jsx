@@ -28,6 +28,7 @@ function IconWithTooltip({ Icon, tip }) {
         <Icon className="h-5 w-5 text-[#6B3BB9]" />
       </span>
 
+      {/* Tooltip */}
       <span
         className={cn(
           "pointer-events-none absolute left-1/2 -translate-x-1/2 -top-2 -translate-y-full",
@@ -91,6 +92,7 @@ function InfoRow({
         </div>
       </div>
 
+      {/* copy (optional) */}
       {copyValue ? (
         <button
           type="button"
@@ -208,9 +210,9 @@ export default function Contact() {
   const LOCATION = "Sri Lanka";
   const LINKEDIN_URL = "https://www.linkedin.com/";
 
-  // ✅ EmailJS IDs
+  // ✅ EmailJS config
   const SERVICE_ID = "service_e3owkn2";
-  const TEMPLATE_ID = "k3esnx1";
+  const TEMPLATE_ID = "template_36fp5as";
   const PUBLIC_KEY = "MGomnIjRnUhnxAtHb";
 
   const [form, setForm] = useState({
@@ -221,7 +223,6 @@ export default function Contact() {
   });
 
   const [touched, setTouched] = useState({});
-  const [hint, setHint] = useState("");
   const [copiedKey, setCopiedKey] = useState("");
   const [status, setStatus] = useState("idle"); // idle | sending | success | error
 
@@ -242,6 +243,13 @@ export default function Contact() {
 
   const canSubmit = Object.keys(errors).length === 0 && status !== "sending";
 
+  const hint = useMemo(() => {
+    if (status === "sending") return "Sending…";
+    if (status === "success") return "Message sent ✅";
+    if (status === "error") return "Failed to send. Try again.";
+    return "";
+  }, [status]);
+
   const onSubmit = async (e) => {
     e.preventDefault();
     setTouched({ email: true, message: true });
@@ -249,7 +257,6 @@ export default function Contact() {
 
     try {
       setStatus("sending");
-      setHint("Sending…");
 
       await emailjs.send(
         SERVICE_ID,
@@ -259,27 +266,19 @@ export default function Contact() {
           email: form.email,
           subject: form.subject || "Portfolio Contact",
           message: form.message,
-          to_email: TO_EMAIL, // (optional) template එකේ යොදාගන්න පුළුවන්
+          to_email: TO_EMAIL, // optional
         },
         PUBLIC_KEY
       );
 
       setStatus("success");
-      setHint("Message sent ✅");
       setForm({ email: "", name: "", subject: "", message: "" });
       setTouched({});
-
-      setTimeout(() => {
-        setStatus("idle");
-        setHint("");
-      }, 2000);
+      setTimeout(() => setStatus("idle"), 2000);
     } catch (err) {
+      console.log("EmailJS error:", err);
       setStatus("error");
-      setHint("Failed to send. Try again.");
-      setTimeout(() => {
-        setStatus("idle");
-        setHint("");
-      }, 2500);
+      setTimeout(() => setStatus("idle"), 2500);
     }
   };
 
@@ -296,8 +295,9 @@ export default function Contact() {
   const [wrapRef, inView] = useRevealOnce();
 
   return (
-    <section id="contact" className="section-wrap overflow-x-hidden">
+    <section className="section-wrap overflow-x-hidden">
       <div ref={wrapRef} className="section-container">
+        {/* Section Title */}
         <div className="section-heading">
           <h2 className="section-title">Contact</h2>
           <div className="section-underline" />
@@ -386,6 +386,7 @@ export default function Contact() {
                 "shadow-[0_28px_90px_rgba(18,16,46,0.22)]"
               )}
             >
+              {/* modern glows */}
               <div className="pointer-events-none absolute -top-28 -right-28 h-80 w-80 rounded-full bg-white/10 blur-3xl" />
               <div className="pointer-events-none absolute -bottom-28 -left-28 h-80 w-80 rounded-full bg-fuchsia-300/15 blur-3xl" />
               <div className="pointer-events-none absolute inset-0 bg-white/5 backdrop-blur-[2px]" />
@@ -465,13 +466,22 @@ export default function Contact() {
           </div>
         </div>
 
+        {/* FOOTER */}
         <footer className="mt-16 sm:mt-20 md:mt-24 border-t border-[#E8DDF8] pt-8 sm:pt-10">
           <div className="text-center">
             <div className="flex flex-wrap justify-center gap-x-8 gap-y-4 text-sm font-semibold text-[#6B3BB9]">
-              <a href="#about" className="hover:underline">About</a>
-              <a href="#skills" className="hover:underline">Skills</a>
-              <a href="#projects" className="hover:underline">Projects</a>
-              <a href="#contact" className="hover:underline">Contact</a>
+              <a href="#about" className="hover:underline">
+                About
+              </a>
+              <a href="#skills" className="hover:underline">
+                Skills
+              </a>
+              <a href="#projects" className="hover:underline">
+                Projects
+              </a>
+              <a href="#contact" className="hover:underline">
+                Contact
+              </a>
             </div>
 
             <p className="mt-8 sm:mt-10 text-sm text-[#6B3BB9]">
