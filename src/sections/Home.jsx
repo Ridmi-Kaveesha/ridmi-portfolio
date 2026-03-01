@@ -188,7 +188,7 @@ export default function Home() {
               </a>
 
               <a
-                href="mailto:ridmikaveesha999@email.com"
+                href="mailto:ridmikaveesha999@gmail.com"
                 title="Email"
                 className="w-10 h-10 flex items-center justify-center rounded-full bg-purple-100 text-[#4A2E73] text-lg transition hover:bg-[#6B3BB9] hover:text-white hover:scale-110"
               >

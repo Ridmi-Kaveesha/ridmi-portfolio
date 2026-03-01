@@ -48,7 +48,7 @@
   {
     "id": "my-portfolio",
     "title": "Personal Portfolio Website",
-    "subtitle": "Modern React Portfolio",
+    "subtitle": "React Portfolio",
     "desc": "A modern personal portfolio website showcasing projects, skills, and experience using a clean UI design system with smooth layout and responsive structure.",
     "status": "Completed",
     "image": "/projectpics/portfolio.png",

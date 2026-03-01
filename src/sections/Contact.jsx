@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from "react";
+import emailjs from "@emailjs/browser";
 import {
   FaEnvelope,
   FaPhoneAlt,
@@ -10,20 +11,6 @@ import {
 
 function cn(...classes) {
   return classes.filter(Boolean).join(" ");
-}
-
-function buildMailTo({ to, name, email, subject, message }) {
-  const finalSubject = subject?.trim() || "Portfolio Contact";
-  const body = [
-    `Name: ${name || "-"}`,
-    `Email: ${email || "-"}`,
-    "",
-    message || "",
-  ].join("\n");
-
-  return `mailto:${to}?subject=${encodeURIComponent(
-    finalSubject
-  )}&body=${encodeURIComponent(body)}`;
 }
 
 /* ---------- Tooltip Icon ---------- */
@@ -104,7 +91,6 @@ function InfoRow({
         </div>
       </div>
 
-      {/* copy (optional) */}
       {copyValue ? (
         <button
           type="button"
@@ -217,10 +203,17 @@ function useRevealOnce() {
 }
 
 export default function Contact() {
+  // --- Contact info (left card) ---
   const TO_EMAIL = "ridmikaveesha999@gmail.com";
   const PHONE = "0705084100";
   const LOCATION = "Sri Lanka";
   const LINKEDIN_URL = "https://www.linkedin.com/";
+
+  // --- EmailJS IDs (replace with YOUR real values) ---
+  // Tip: best practice is put these in .env (VITE_...) – but direct works too.
+  const EMAILJS_SERVICE_ID = "service_gqnrben"; // from Email Services
+  const EMAILJS_TEMPLATE_ID = "template_36fp5as"; // from Email Templates
+  const EMAILJS_PUBLIC_KEY = "MGomnlJRnUnhxAtHb"; // from Account → Public Key
 
   const [form, setForm] = useState({
     email: "",
@@ -230,7 +223,8 @@ export default function Contact() {
   });
 
   const [touched, setTouched] = useState({});
-  const [hint, setHint] = useState("");
+  const [status, setStatus] = useState({ type: "", text: "" }); // success | error | info
+  const [loading, setLoading] = useState(false);
   const [copiedKey, setCopiedKey] = useState("");
 
   const errors = useMemo(() => {
@@ -245,23 +239,53 @@ export default function Contact() {
     return e;
   }, [form]);
 
-  const mailto = useMemo(() => buildMailTo({ to: TO_EMAIL, ...form }), [form]);
-
   const onChange = (key) => (e) =>
     setForm((prev) => ({ ...prev, [key]: e.target.value }));
 
-  const canSubmit = Object.keys(errors).length === 0;
+  const canSubmit = Object.keys(errors).length === 0 && !loading;
 
-  const onSubmit = (e) => {
+  const onSubmit = async (e) => {
     e.preventDefault();
     setTouched({ email: true, message: true });
+
     if (!canSubmit) return;
 
-    setHint("Opening your email app…");
-    setTimeout(() => {
-      window.location.href = mailto;
-      setTimeout(() => setHint(""), 1200);
-    }, 120);
+    setLoading(true);
+    setStatus({ type: "info", text: "Sending…" });
+
+    const templateParams = {
+      // These names MUST match your EmailJS template variables:
+      // {{name}}, {{email}}, {{subject}}, {{message}}
+      name: form.name || "Anonymous",
+      email: form.email,
+      subject: form.subject || "Portfolio Contact",
+      message: form.message,
+      to_email: TO_EMAIL, // optional (if you want to use it in template)
+    };
+
+    try {
+      const res = await emailjs.send(
+        EMAILJS_SERVICE_ID,
+        EMAILJS_TEMPLATE_ID,
+        templateParams,
+        { publicKey: EMAILJS_PUBLIC_KEY }
+      );
+
+      // res.status usually 200 on success
+      setStatus({ type: "success", text: "Message sent successfully ✅" });
+      setForm({ email: "", name: "", subject: "", message: "" });
+      setTouched({});
+    } catch (err) {
+      // Most common causes: wrong IDs, template vars mismatch, domain restriction
+      console.error("EmailJS error:", err);
+      setStatus({
+        type: "error",
+        text: "Failed to send ❌ Check EmailJS IDs / template variables / domain settings.",
+      });
+    } finally {
+      setLoading(false);
+      setTimeout(() => setStatus({ type: "", text: "" }), 4500);
+    }
   };
 
   const copy = async (key, value) => {
@@ -276,6 +300,13 @@ export default function Contact() {
 
   const [wrapRef, inView] = useRevealOnce();
 
+  const statusClass =
+    status.type === "success"
+      ? "text-emerald-100"
+      : status.type === "error"
+      ? "text-red-100"
+      : "text-white/70";
+
   return (
     <section id="contact" className="section-wrap overflow-x-hidden">
       <div ref={wrapRef} className="section-container">
@@ -283,7 +314,9 @@ export default function Contact() {
         <div className="section-heading">
           <h2 className="section-title">Contact</h2>
           <div className="section-underline" />
-          <p className="section-subtitle">Have a project in mind? Let’s connect.</p>
+          <p className="section-subtitle">
+            Have a project in mind? Let’s connect.
+          </p>
         </div>
 
         <div className="mt-10 sm:mt-12 grid gap-8 lg:grid-cols-12 lg:gap-10">
@@ -423,8 +456,8 @@ export default function Contact() {
                   />
 
                   <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 pt-2">
-                    <p className="text-xs font-semibold text-white/70">
-                      {hint ? hint : " Keep it short & clear ✨"}
+                    <p className={cn("text-xs font-semibold", statusClass)}>
+                      {status.text ? status.text : "Keep it short & clear ✨"}
                     </p>
 
                     <button
@@ -439,7 +472,7 @@ export default function Contact() {
                         "disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:translate-y-0"
                       )}
                     >
-                      Send
+                      {loading ? "Sending..." : "Send"}
                     </button>
                   </div>
                 </div>
