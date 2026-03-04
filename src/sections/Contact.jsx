@@ -439,7 +439,7 @@ export default function Contact() {
                     <Input
                       label="Subject"
                       type="text"
-                      placeholder="Internship / Project"
+                      placeholder="Internship / Job"
                       value={form.subject}
                       onChange={onChange("subject")}
                     />

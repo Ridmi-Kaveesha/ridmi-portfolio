@@ -52,9 +52,9 @@ export default function About() {
 
   const introParagraphs = useMemo(
     () => [
-      "I am a passionate Computer Science undergraduate at SLIIT City University with a strong interest in frontend development and UI/UX design. I enjoy creating modern, responsive, and user-friendly web applications using technologies such as React.js, JavaScript, and MongoDB.",
-      "I have developed several academic and personal projects including e-commerce websites, pharmacy management systems, and travel booking platforms. These experiences helped me improve my problem-solving skills and gain real-world development experience.",
-      "I am continuously learning new technologies and improving my skills, with the goal of becoming a professional frontend developer and building impactful digital products."
+      "I am a Computer Science undergraduate at SLIIT City University with a strong interest in Frontend Development and UI/UX design. I enjoy building modern, responsive, and user-friendly web applications that combine clean design with smooth functionality.",
+      "I have worked on several academic and personal projects, including e-commerce platforms, pharmacy systems, travel booking websites, and Android applications. Through these projects, I gained hands-on experience with React.js, JavaScript, MongoDB, and Tailwind CSS framework while strengthening my problem-solving skills.",
+      "I am a continuous learner who is always improving my technical abilities and exploring new technologies. Alongside frontend development, I am also expanding my knowledge in Quality Assurance, aiming to build reliable, high-quality digital solutions."
     ],
     []
   );

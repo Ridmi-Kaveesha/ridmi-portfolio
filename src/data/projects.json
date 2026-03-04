@@ -25,8 +25,8 @@
   {
     "id": "red-restaurant-app",
     "title": "Red",
-    "subtitle": "Android Restaurant App",
-    "desc": "An Android-based food delivery application designed for a restaurant’s online ordering system. Users can browse menus, customize orders, and schedule deliveries.",
+    "subtitle": "Android Restaurant App(Team Project)",
+    "desc": "Developed as a team-based Android application for a restaurant’s online ordering system. The app enables users to browse menus, customize orders, and schedule deliveries, creating a seamless experience from browsing to checkout.",
     "status": "Completed",
     "image": "/projectpics/resturant.png",
     "tags": ["Android", "Java", "Food Delivery"],
@@ -42,7 +42,7 @@
     },
     "links": {
       "live": "https://example.com",
-      "github": "https://github.com/example"
+      "github": "https://github.com/DilanSriyantha/red-restaurant-app"
     }
   },
   {
@@ -91,33 +91,10 @@
       "github": "https://github.com/example"
     }
   },
-  {
-    "id": "my-portfolio",
-    "title": "Personal Portfolio Website",
-    "subtitle": "Modern React Portfolio",
-    "desc": "A modern personal portfolio website showcasing projects, skills, and experience using a clean UI design system with smooth layout and responsive structure.",
-    "status": "Completed",
-    "image": "/projectpics/portfolio.png",
-    "tags": ["Portfolio", "React", "Tailwind", "UI Design"],
-    "caseStudy": {
-      "role": "Frontend Developer",
-      "tools": ["React.js", "Tailwind CSS", "Figma"],
-      "highlights": [
-        "Section-based modern layout",
-        "Reusable UI components",
-        "Responsive grid system",
-        "Project modal case-study view"
-      ]
-    },
-    "links": {
-      "live": "https://ridmi-portfolio-six.vercel.app/",
-      "github": "https://github.com/Ridmi-Kaveesha/ridmi-portfolio"
-    }
-  },
   
   {
-    "id": "sri-lanka-roads",
-    "title": "Sri Lanka Roads",
+    "id": "TravLanaka",
+    "title": "TravLanaka",
     "subtitle": "Travel Package Booking Website",
     "desc": "Currently developing a travel package booking platform where customers can view tour packages, select their preferred option, and proceed with online payment.",
     "status": "Ongoing",
