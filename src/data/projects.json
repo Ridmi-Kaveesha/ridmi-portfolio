@@ -22,6 +22,31 @@
       "github": "https://github.com/Ridmi-Kaveesha/Handicraft_Ecommerce_website"
     }
   },
+  
+  {
+    "id": "TravLanaka",
+    "title": "TravLanaka",
+    "subtitle": "Travel Package Booking Website",
+    "desc": "Currently developing a travel package booking platform where customers can view tour packages, select their preferred option, and proceed with online payment.",
+    "status": "Ongoing",
+    "image": "/projectpics/travel.png",
+    "tags": ["Web App", "Booking", "Payments"],
+    "caseStudy": {
+      "role": "Frontend Developer / UI Designer",
+      "tools": ["Figma", "React.js", "MongoDB"],
+      "highlights": [
+        "Tour package browsing system",
+        "User-friendly booking workflow",
+        "Payment integration preparation",
+        "Modern responsive UI design"
+      ]
+    },
+    "links": {
+      "live": "https://trave-lanka-website-wray.vercel.app/",
+      "github": "https://github.com/Ridmi-Kaveesha/TraveLanka-website"
+    }
+  },
+
   {
     "id": "red-restaurant-app",
     "title": "Red",
@@ -88,30 +113,6 @@
     },
     "links": {
       "live": "https://rajapaksepharmacy.store/",
-      "github": "https://github.com/example"
-    }
-  },
-  
-  {
-    "id": "TravLanaka",
-    "title": "TravLanaka",
-    "subtitle": "Travel Package Booking Website",
-    "desc": "Currently developing a travel package booking platform where customers can view tour packages, select their preferred option, and proceed with online payment.",
-    "status": "Ongoing",
-    "image": "/projectpics/travel.png",
-    "tags": ["Web App", "Booking", "Payments"],
-    "caseStudy": {
-      "role": "Frontend Developer / UI Designer",
-      "tools": ["Figma", "React.js", "MongoDB"],
-      "highlights": [
-        "Tour package browsing system",
-        "User-friendly booking workflow",
-        "Payment integration preparation",
-        "Modern responsive UI design"
-      ]
-    },
-    "links": {
-      "live": "https://example.com",
       "github": "https://github.com/example"
     }
   }
