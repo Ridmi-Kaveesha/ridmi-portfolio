@@ -1,210 +1,203 @@
 import { useEffect, useState } from "react";
 import { FaGithub, FaLinkedin, FaEnvelope, FaDownload } from "react-icons/fa";
 
-export default function Home() {
-  // Title typing
-  const fullTitle = "Hi, I’m Ridmi Kaveesha..";
-  const [titleTyped, setTitleTyped] = useState("");
-  const [titleDone, setTitleDone] = useState(false);
+function useTypingEffect(text, speed = 60, startDelay = 0) {
+  const [typedText, setTypedText] = useState("");
+  const [isDone, setIsDone] = useState(false);
 
-  // Roles (type one-by-one, then show all together)
-  const roles = ["Frontend Developer", "UI/UX Designer", "QA Enthusiast"];
-  const [roleStep, setRoleStep] = useState(0);
-  const [roleTyped, setRoleTyped] = useState("");
-  const [doneRoles, setDoneRoles] = useState([]);
-
-  // Show controls
-  const [showRoleLine, setShowRoleLine] = useState(false);
-  const [showBtn, setShowBtn] = useState(false);
-  const [showIcons, setShowIcons] = useState(false);
-
-  // 1) Title typing
   useEffect(() => {
     let i = 0;
-    const t = setInterval(() => {
-      i += 1;
-      setTitleTyped(fullTitle.slice(0, i));
-      if (i >= fullTitle.length) {
-        clearInterval(t);
-        setTitleDone(true);
-        setTimeout(() => setShowRoleLine(true), 250);
-      }
-    }, 55);
+    let timer;
 
-    return () => clearInterval(t);
-  }, []);
+    const startTyping = () => {
+      timer = setInterval(() => {
+        i += 1;
+        setTypedText(text.slice(0, i));
+        if (i >= text.length) {
+          clearInterval(timer);
+          setIsDone(true);
+        }
+      }, speed);
+    };
 
-  // 2) Roles typing sequence (no delete)
-  useEffect(() => {
-    if (!titleDone) return;
-    if (!showRoleLine) return;
-    if (roleStep >= roles.length) return;
-
-    const current = roles[roleStep];
-
-    const timer = setTimeout(() => {
-      const next = current.slice(0, roleTyped.length + 1);
-      setRoleTyped(next);
-
-      if (next === current) {
-        setDoneRoles((prev) => [...prev, current]);
-        setRoleTyped("");
-
-        setTimeout(() => {
-          setRoleStep((s) => s + 1);
-        }, 350);
-      }
-    }, 55);
-
-    return () => clearTimeout(timer);
-  }, [titleDone, showRoleLine, roleStep, roleTyped]);
-
-  // 3) After all roles completed -> show button then icons
-  useEffect(() => {
-    if (doneRoles.length !== roles.length) return;
-
-    const t1 = setTimeout(() => setShowBtn(true), 250);
-    const t2 = setTimeout(() => setShowIcons(true), 550);
+    const delayTimer = setTimeout(startTyping, startDelay);
 
     return () => {
-      clearTimeout(t1);
-      clearTimeout(t2);
+      clearInterval(timer);
+      clearTimeout(delayTimer);
     };
-  }, [doneRoles.length]);
+  }, [text, speed, startDelay]);
 
-  const allRolesDone = doneRoles.length === roles.length;
+  return { typedText, isDone };
+}
+
+export default function Home() {
+  const fullTitle = "Hi, I'm Ridmi Kaveesha";
+  const roles = ["Frontend Developer", "UI/UX Designer", "QA Enthusiast"];
+
+  const [currentRoleIndex, setCurrentRoleIndex] = useState(0);
+  const [currentRoleText, setCurrentRoleText] = useState("");
+  const [isDeleting, setIsDeleting] = useState(false);
+
+  const { typedText: titleTyped, isDone: titleDone } = useTypingEffect(fullTitle, 50, 200);
+
+  useEffect(() => {
+    if (!titleDone) return;
+
+    const currentFullRole = roles[currentRoleIndex];
+    let timer;
+
+    const handleTyping = () => {
+      if (!isDeleting) {
+        const nextText = currentFullRole.slice(0, currentRoleText.length + 1);
+        setCurrentRoleText(nextText);
+
+        if (nextText === currentFullRole) {
+          timer = setTimeout(() => setIsDeleting(true), 1500);
+        } else {
+          timer = setTimeout(handleTyping, 60);
+        }
+      } else {
+        const fontText = currentFullRole.slice(0, currentRoleText.length - 1);
+        setCurrentRoleText(fontText);
+
+        if (fontText === "") {
+          setIsDeleting(false);
+          setCurrentRoleIndex((prev) => (prev + 1) % roles.length);
+        } else {
+          timer = setTimeout(handleTyping, 30);
+        }
+      }
+    };
+
+    timer = setTimeout(handleTyping, isDeleting ? 30 : 60);
+    return () => clearTimeout(timer);
+  }, [titleDone, currentRoleText, isDeleting, currentRoleIndex]);
 
   return (
     <section
       id="home"
-      className="relative min-h-[calc(100vh-64px)] hero-bg flex items-center overflow-x-hidden"
+      className="relative min-h-[calc(100vh-64px)] bg-[#f3f1fa] flex items-center overflow-hidden py-12 lg:py-0"
     >
-      <div className="mx-auto max-w-6xl w-full px-4 sm:px-6 lg:px-8">
-        {/* Mobile: 1 col | Desktop: 2 col */}
-        <div className="grid grid-cols-1 md:grid-cols-12 items-center gap-10 md:gap-y-10">
-          {/* IMAGE */}
-          <div className="md:col-span-5 flex justify-center md:justify-start">
-            <div className="relative">
-              <div className="absolute -inset-10 sm:-inset-12 rounded-full bg-purple-300/60 blur-3xl" />
+      {/* PURE BACKGROUND GRADIENTS */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none select-none">
+        <div className="absolute top-[-10%] right-[-5%] w-[700px] h-[700px] bg-purple-200/30 rounded-full filter blur-[120px]"></div>
+        <div className="absolute bottom-[-10%] left-[-5%] w-[600px] h-[600px] bg-amber-100/20 rounded-full filter blur-[130px]"></div>
+      </div>
 
-              <img
-                src="/girl.png"
-                alt="profile"
-                className="
-                  relative hero-float drop-shadow-xl
-                  w-[260px] xs:w-[300px] sm:w-[360px] md:w-[420px] lg:w-[460px]
-                  mx-auto md:mx-0
-                  md:translate-x-10
-                "
-              />
-            </div>
-          </div>
-
-          {/* CONTENT */}
-          <div className="md:col-span-7 text-center md:text-left md:pl-12 lg:pl-16 md:translate-x-6 lg:translate-x-10">
-            {/* Title */}
-            <h1 className="text-3xl sm:text-4xl md:text-5xl font-extrabold text-[#1F2A53] leading-tight break-words">
+      <div className="relative mx-auto max-w-6xl w-full px-6 sm:px-8 lg:px-12 z-10">
+        <div className="grid grid-cols-1 lg:grid-cols-12 items-center gap-12 lg:gap-6">
+          
+          {/* LEFT CONTENT COLUMN */}
+          <div className="lg:col-span-7 text-left flex flex-col justify-center items-start order-2 lg:order-1">
+            
+            {/* Main Title */}
+            <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight text-[#1e1b4b] whitespace-nowrap max-w-max">
               {titleTyped}
-              {titleTyped.length < fullTitle.length && (
-                <span className="typing-cursor">|</span>
+              {!titleDone && (
+                <span className="inline-block w-[3px] h-[35px] sm:h-[45px] lg:h-[55px] ml-1 bg-indigo-900 animate-pulse align-middle">|</span>
               )}
             </h1>
 
-            {/* Roles line */}
-            <p className="mt-4 text-base sm:text-lg md:text-xl text-[#6B3BB9] font-semibold min-h-[28px]">
-              {!showRoleLine ? null : (
-                <>
-                  {!allRolesDone ? (
-                    <span className="fade-up">
-                      {doneRoles.length > 0 && (
-                        <span className="break-words">
-                          {doneRoles.join(" | ")}
-                          <span className="mx-2 opacity-70">|</span>
-                        </span>
-                      )}
-
-                      <span className="break-words">
-                        {roleTyped}
-                        <span className="typing-cursor">|</span>
-                      </span>
-                    </span>
-                  ) : (
-                    <span className="fade-up break-words">
-                      {roles.join(" | ")}
-                    </span>
-                  )}
-                </>
+            {/* Roles Subtitle */}
+            <div className="mt-6 min-h-[36px] flex items-center text-left">
+              {titleDone && (
+                <p className="text-xl sm:text-2xl font-semibold text-slate-800">
+                  <span className="text-indigo-900 font-bold border-r-2 border-indigo-900 pr-1">
+                    {currentRoleText}
+                  </span>
+                </p>
               )}
+            </div>
+
+            {/* Paragraph Text */}
+            <p className="mt-4 text-slate-600 text-base sm:text-lg max-w-xl text-left leading-relaxed font-normal">
+              Passionate about crafting pixel-perfect, accessible, and user-centric digital experiences. 
+              Specialized in frontend engineering with a strong eye for UI/UX aesthetics and a dedicated mindset for quality assurance.
             </p>
 
-            {/* Resume Button */}
-            <div className={`mt-6 ${showBtn ? "fade-up" : "opacity-0"}`}>
+            {/* Action Buttons & Social Icons */}
+            <div className="mt-8 flex flex-wrap items-center justify-start gap-5 w-full">
+              
+              {/* NAVBAR MATCHING COLOR WITH SCALE & HOVER EFFECT */}
               <a
-                href="/CV.pdf"
+                href="/projectpics/CV.pdf"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="
-                  inline-flex items-center justify-center gap-2
-                  w-full sm:w-auto
-                  px-7 sm:px-8 py-2.5
-                  rounded-xl
-                  bg-gradient-to-r from-[#4A2E73] to-[#6B3BB9]
-                  text-white font-medium
-                  shadow-md transition duration-300
-                  hover:from-[#6B3BB9] hover:to-[#8B5CF6] hover:scale-105 hover:shadow-lg
-                "
+                className="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl bg-[#4c1d95] text-white font-semibold text-sm tracking-wide shadow-md transition-all duration-300 transform hover:scale-105 hover:bg-[#3b0764]"
               >
-                <FaDownload />
+                <FaDownload className="text-xs" />
                 Check Resume
               </a>
-            </div>
 
-            {/* Social Icons */}
-            <div
-              className={`
-                mt-7 flex items-center gap-5 sm:gap-6
-                justify-center md:justify-start
-                ${showIcons ? "fade-up" : "opacity-0"}
-              `}
-            >
-              <a
-                href="https://github.com/Ridmi-Kaveesha"
-                target="_blank"
-                rel="noopener noreferrer"
-                title="GitHub"
-                className="w-10 h-10 flex items-center justify-center rounded-full bg-purple-100 text-[#4A2E73] text-lg transition hover:bg-[#6B3BB9] hover:text-white hover:scale-110"
-              >
-                <FaGithub />
-              </a>
+              <div className="hidden sm:block h-6 w-px bg-slate-300 mx-1"></div>
 
-              <a
-                href="https://linkedin.com/in/ridmi-kaveesha-279876366"
-                target="_blank"
-                rel="noopener noreferrer"
-                title="LinkedIn"
-                className="w-10 h-10 flex items-center justify-center rounded-full bg-purple-100 text-[#4A2E73] text-lg transition hover:bg-[#6B3BB9] hover:text-white hover:scale-110"
-              >
-                <FaLinkedin />
-              </a>
+              <div className="flex items-center gap-3">
+                <a href="https://github.com/Ridmi-Kaveesha" target="_blank" rel="noopener noreferrer" className="w-11 h-11 flex items-center justify-center rounded-xl bg-white border border-slate-200 text-slate-600 text-lg shadow-sm transition-all duration-300 hover:border-purple-400 hover:text-purple-600">
+                  <FaGithub />
+                </a>
+                <a href="https://linkedin.com/in/ridmi-kaveesha-279876366" target="_blank" rel="noopener noreferrer" className="w-11 h-11 flex items-center justify-center rounded-xl bg-white border border-slate-200 text-slate-600 text-lg shadow-sm transition-all duration-300 hover:border-blue-400 hover:text-blue-600">
+                  <FaLinkedin />
+                </a>
+                <a href="mailto:ridmikaveesha999@gmail.com" className="w-11 h-11 flex items-center justify-center rounded-xl bg-white border border-slate-200 text-slate-600 text-lg shadow-sm transition-all duration-300 hover:border-pink-400 hover:text-pink-600">
+                  <FaEnvelope />
+                </a>
+              </div>
 
-              <a
-                href="mailto:ridmikaveesha999@gmail.com"
-                title="Email"
-                className="w-10 h-10 flex items-center justify-center rounded-full bg-purple-100 text-[#4A2E73] text-lg transition hover:bg-[#6B3BB9] hover:text-white hover:scale-110"
-              >
-                <FaEnvelope />
-              </a>
             </div>
           </div>
+
+          {/* RIGHT IMAGE COLUMN */}
+          <div className="lg:col-span-5 flex justify-center lg:justify-end order-1 lg:order-2">
+            <div className="relative w-[320px] sm:w-[380px] lg:w-[430px] aspect-square flex items-center justify-center select-none">
+              
+              {/* Soft background aura */}
+              <div className="absolute inset-2 rounded-full bg-purple-300/20 blur-3xl"></div>
+
+              {/* LAYER 1: OUTER WAVES */}
+              <div 
+                className="absolute w-[96%] h-[96%] bg-purple-200/40 opacity-60"
+                style={{ 
+                  borderRadius: "42% 58% 70% 30% / 45% 45% 55% 55%",
+                  animation: "fluid-shape-generator 14s ease-in-out infinite" 
+                }}
+              ></div>
+
+              {/* LAYER 2: INTERMEDIATE BLOB GRADIENT */}
+              <div 
+                className="absolute w-[90%] h-[90%] bg-gradient-to-tr from-purple-300/40 via-pink-200/30 to-amber-100/40 opacity-80"
+                style={{ 
+                  borderRadius: "42% 58% 70% 30% / 45% 45% 55% 55%",
+                  animation: "fluid-shape-generator 10s ease-in-out infinite reverse" 
+                }}
+              ></div>
+
+              {/* LAYER 3: AVATAR MASKING BOX - RE-BALANCED TO PERFECT SIZE w-[70%] h-[70%] */}
+              <div 
+                className="absolute w-[70%] h-[70%] bg-white p-2.5 shadow-2xl border border-white/80 z-10 overflow-hidden flex items-center justify-center rounded-full"
+              >
+                <img
+                  src="/girl.png"
+                  alt="Ridmi Kaveesha Portfolio Avatar"
+                  className="w-full h-full object-cover rounded-full"
+                  loading="eager"
+                />
+              </div>
+
+            </div>
+          </div>
+
         </div>
       </div>
 
-      {/* Decorative bubbles */}
-      <div className="pointer-events-none absolute bottom-10 right-10 hidden md:block">
-        <div className="bubble bubble-lg" />
-        <div className="bubble bubble-sm" />
-        <div className="bubble bubble-md" />
-      </div>
+      {/* COMPACT CLEAN CSS ANIMATIONS */}
+      <style>{`
+        @keyframes fluid-shape-generator {
+          0%, 100% { border-radius: 42% 58% 70% 30% / 45% 45% 55% 55%; }
+          33% { border-radius: 70% 30% 52% 48% / 60% 40% 60% 40%; }
+          66% { border-radius: 50% 50% 30% 70% / 40% 60% 35% 65%; }
+        }
+      `}</style>
     </section>
   );
 }
