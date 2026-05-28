@@ -112,8 +112,7 @@ export default function Home() {
 
             {/* Paragraph Text */}
             <p className="mt-4 text-slate-600 text-base sm:text-lg max-w-xl text-left leading-relaxed font-normal">
-              Passionate about crafting pixel-perfect, accessible, and user-centric digital experiences. 
-              Specialized in frontend engineering with a strong eye for UI/UX aesthetics and a dedicated mindset for quality assurance.
+            Passionate Computer Science undergraduate specializing in UI/UX design and frontend development, dedicated to crafting clean, modern, and user-centric digital experiences.
             </p>
 
             {/* Action Buttons & Social Icons */}
@@ -177,7 +176,7 @@ export default function Home() {
                 className="absolute w-[70%] h-[70%] bg-white p-2.5 shadow-2xl border border-white/80 z-10 overflow-hidden flex items-center justify-center rounded-full"
               >
                 <img
-                  src="/girl.png"
+                  src="/my.png"
                   alt="Ridmi Kaveesha Portfolio Avatar"
                   className="w-full h-full object-cover rounded-full"
                   loading="eager"
